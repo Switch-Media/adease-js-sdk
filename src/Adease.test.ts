@@ -22,6 +22,7 @@ describe('Adease', () => {
         return adease.configureFromURL('http://localhost').then(value => {
             expect(value).to.be.undefined;
             expect(adease.config.getAdBreaks()).to.not.be.empty;
+            expect(adease.getStreams()[0].url).to.equal("http:\/\/sbs-adease.switchmedia.asia\/268\/adEase\/getManifest");
         });
     });
 });

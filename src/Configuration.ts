@@ -16,6 +16,7 @@ export interface ITrackingURL {
 
 export interface IConfiguration {
     trackingURLs: ITrackingURL[];
+    streams: IStream[];
 }
 
 export interface IConfigurationJSON {
@@ -27,12 +28,21 @@ export interface IConfigurationJSON {
             url: string,
             adID: string,
         }>,
+
+        renditions: Array<{
+            url: string;
+            quality: string;
+        }>,
     },
+}
+
+export interface IStream {
+    url: string;
 }
 
 export default class Configuration {
 
-    config: IConfiguration;
+    private config: IConfiguration;
 
     constructor(config: IConfiguration) {
         this.config = config;
@@ -59,6 +69,10 @@ export default class Configuration {
                 kind: obj.event,
                 adID: obj.adID,
             })),
+
+            streams: json.media.renditions.map(obj => ({
+                url: obj.url,
+            })),
         };
     }
 
@@ -79,5 +93,9 @@ export default class Configuration {
 
             return _.concat(ads, ad);
         }, []);
+    }
+
+    public getConfig(): IConfiguration {
+        return this.config;
     }
 }

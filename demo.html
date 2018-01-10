@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <script src="https://unpkg.com/lodash@4.17"></script>
+        <script src="https://unpkg.com/axios@0.17/dist/axios.min.js"></script>
+        <script src="https://content.jwplatform.com/libraries/HHwnBf5R.js"></script>
+        <script src="/dist/index.js"></script>
+    </head>
+    <body>
+        <div id="playerRoot"></div>
+        <script>
+            const configURL = 'http://localhost/268/playback/getUniversalPlayerConfig?videoID=778274371656&subs=%5BASSETID%5D:778274371656,%5BTRACKERCONTEXT%5D:ios,%5BTRACKERDEVICE%5D:iphone,%5BCONTEXT%5D:ios,%5BPLATFORM%5D:ios,%5BDEVICE%5D:iphone,%5BMINBITRATE%5D:100,%5BCXSEGMENTLIST%5D:8m5oiv2r3b4c%2C8m5p4sogemdb%2C8mgpox6wlfje%2C8mrskl7304et%2C8mrssd6kkpme%2C8n2xe3dkpvr9%2C8n2y7m0h8e45%2C8norsk4wci99%2C8nousn3xwib2%2C8nox36sau7d1%2C8nzvj8blwh54%2C8oaxzmsdz2d8%2C8ob1mrq95ira%2C8obcq5bya1qo%2C8olyy2mzwih5%2C8om4qbiwcbay%2C8owwwcq0cbde%2C8owy5hnd6k72%2C8ox20b6mfy94%2C8p82oseqsgzo%2C8pj1aatu3r63%2C8pj613vrj4qw,%5BUNIQUEID%5D:D8A2E03C-9299-4BB6-8D3C-CAA440B7B9BD,%5BCXUSERID%5D:bbf2ded7-e0f9-4998-a181-7d50fc7ab670,%5BCXSITEID%5D:1133921284657819058,%5BCXPRNID%5D:59827365,%5BCXURL%5D:http:%2F%2Fwww.sbs.com.au%2Fondemand%2Fvideo%2Fsingle%2F778274371656,%5BUSERID%5D:bbf2ded7-e0f9-4998-a181-7d50fc7ab670,%5BPPID%5D:BBF2DED7E0F94998A1817D50FC7AB670,%5BDEVICEADID%5D:00000000-0000-0000-0000-000000000000,%5BDEVICEADIDOPTOUT%5D:1&cl=1&format=json';
+            const playerInstance = jwplayer("playerRoot");
+            const adeaseI = new adease.Adease();
+
+            window.playerInstance = playerInstance;
+            
+
+            adeaseI.configureFromURL(configURL).then(() => {
+                var streamUrl = adeaseI.getStreams()[0].url;
+                playerInstance.setup({
+                    file: streamUrl,
+                });
+
+                playerInstance.on('time', data => {
+                    adeaseI.notifyTimeUpdate(data.position)
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -42,4 +42,9 @@ describe('Configuration', () => {
         expect(ads[9].startTime).to.equal(3773989.234);
         expect(ads[9].endTime).to.equal(3789100.956);
     });
+
+    it('should get streams', () => {
+        const config = Configuration.fromJSON(FullConfig);
+        expect(config.getConfig().streams).to.have.length(5);
+    });
 });

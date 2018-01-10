@@ -30,6 +30,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
+  externals: ['axios'],
   // Authored as a UMD library with the name 'adease'.
   output: {
     filename: 'index.js',
