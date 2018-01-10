@@ -1,1 +1,7 @@
-export class Foo {}
+import './polyfills';
+
+import Adease from './Adease';
+
+export {
+    Adease
+};
