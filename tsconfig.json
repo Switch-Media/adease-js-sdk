@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "es6",
         "module": "none",
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "strictNullChecks": true
     }
 }

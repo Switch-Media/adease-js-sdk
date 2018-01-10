@@ -1,7 +1,7 @@
 export default class {
     configurationUrl: string;
 
-    constructor(configurationUrl: string) {
-        this.configurationUrl = configurationUrl;
+    constructor(configuration: string) {
+        // this.configurationUrl = configurationUrl;
     }
 }
