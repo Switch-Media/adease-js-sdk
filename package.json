@@ -12,21 +12,27 @@
   "license": "proprietary",
   "devDependencies": {
     "@types/chai": "^4.1.0",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/lodash": "^4.14.92",
     "@types/mocha": "^2.2.46",
+    "@types/nock": "^9.1.1",
+    "@types/sinon": "^4.1.2",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "mocha": "^4.1.0",
+    "nock": "^9.1.6",
+    "sinon": "^4.1.4",
     "ts-loader": "^3.2.0",
     "ts-node": "^4.1.0",
     "typescript": "^2.6.2",
     "webpack": "^3.10.0"
   },
   "dependencies": {
+    "axios": "^0.17.1",
     "lodash": "^4.17.4",
-    "promise-polyfill": "^7.0.0",
-    "whatwg-fetch": "^2.0.3"
+    "promise-polyfill": "^7.0.0"
   }
 }

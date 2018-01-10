@@ -3,6 +3,7 @@
         "target": "es6",
         "module": "none",
         "noImplicitAny": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "moduleResolution": "node"
     }
 }

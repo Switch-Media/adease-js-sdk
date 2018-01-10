@@ -39,7 +39,7 @@ export default class Configuration {
     }
 
     public static fromJSON(config: IConfigurationJSON): Configuration {
-        const parsedConfiguration = this.parseFromObject(config);
+        const parsedConfiguration = Configuration.parseFromObject(config);
         if (parsedConfiguration === null) {
             throw "error parsing configuration";
         }
