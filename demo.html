@@ -12,9 +12,6 @@
             const playerInstance = jwplayer("playerRoot");
             const adeaseI = new adease.Adease();
 
-            window.playerInstance = playerInstance;
-            
-
             adeaseI.configureFromURL(configURL).then(() => {
                 var streamUrl = adeaseI.getStreams()[0].url;
                 playerInstance.setup({

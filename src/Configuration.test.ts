@@ -47,4 +47,9 @@ describe('Configuration', () => {
         const config = Configuration.fromJSON(FullConfig);
         expect(config.getConfig().streams).to.have.length(5);
     });
+
+    it('should get tracking urls', () => {
+        const config = Configuration.fromJSON(FullConfig);
+        expect(config.getTrackingURLs()).to.have.length(548);
+    });
 });

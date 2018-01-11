@@ -4,6 +4,7 @@ export interface IAd {
     id: string;
     startTime: number;
     endTime: number;
+    trackingUrls: ITrackingURL[];
 }
 
 export interface ITrackingURL {
@@ -85,10 +86,19 @@ export default class Configuration {
                 return ads;
             }
 
+            // Get the tracking URLs for this ad.
+            const trackingURLs = _(this.config.trackingURLs)
+            .filter(t => 
+                t.adID === tURL.adID
+                && t.startTime >= tURL.startTime
+                && t.endTime <= tURL.endTime)
+            .value();
+
             const ad: IAd = {
                 id: tURL.adID,
                 startTime: tURL.startTime,
                 endTime: tURL.endTime,
+                trackingUrls: trackingURLs,
             };
 
             return _.concat(ads, ad);
@@ -97,5 +107,9 @@ export default class Configuration {
 
     public getConfig(): IConfiguration {
         return this.config;
+    }
+
+    public getTrackingURLs(): ITrackingURL[] {
+        return this.config.trackingURLs;
     }
 }

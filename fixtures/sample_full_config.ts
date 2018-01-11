@@ -80,7 +80,7 @@ export default {
           "starttime": "1000",
           "endtime": "1000",
           "event": "impression",
-          "url": "http:\/\/sbs-beacons-adease.switchmedia.asia\/268\/adEase\/trackEvent?msg=ad_impression&data=switchcl-e=ad_impression-pid=adease_session_99027655-sid=99027655-pos=0-v=1943910-a=2118362-s=268-d=30.514688999999997-th=2-an=0-platform=ios-device=iphone-context=ios-cuepointID=0_0-adOrder=0&sessionID=99027655&token=",
+          "url": "http:\/\/sbs-beacons-adease.switchmedia.asia",
           "adID": "76895",
           "adVideoID": "2118362"
         },
