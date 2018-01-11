@@ -48,26 +48,18 @@ export default class {
         .map(ad => {
             return _(ad.trackingUrls)
             .filter(tURL => tURL.kind === 'impression')
+            .filter(tURL => tURL.startTime < time)
             .map(tURL => {
                 if (_.includes(this.sentBeacons, tURL)) {
                     return Promise.resolve();
                 }
+                this.sentBeacons.push(tURL);
                 return axios.get(tURL.url);
             })
             .value();
         })
         .value();
         return Promise.all(ps).then(() => undefined);
-        
-
-        // Find beacons for this time.
-        /*const ps = _(this.config.getTrackingURLs())
-        .filter(tURL => tURL.startTime > time && tURL.kind === 'impression')
-        .map(tURL => {
-            return axios.get(tURL.url);
-        })
-        .value();
-        return Promise.all(ps).then(() => undefined);*/
     }
 
     private ensureSetup() {

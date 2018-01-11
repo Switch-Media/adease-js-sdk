@@ -26,7 +26,7 @@ describe('Adease', () => {
         });
     });
 
-    it('sends beacons', () => {
+    it('sends beacons for prerolls', () => {
         nock('http://localhost')
             .get('/')
             .reply(200, FullConfig);
@@ -40,11 +40,47 @@ describe('Adease', () => {
             .reply(200);
 
         const adease = new Adease();
-        return adease.configureFromURL('http://localhost').then(value => {
-            // 1000ms, 1sec
-            return adease.notifyTimeUpdate(1000);
+        return adease.configureFromURL('http://localhost').then(() => {
+            // Only send the impression after 1000ms
+            return adease.notifyTimeUpdate(100);
+        }).then(() => {
+            expect(impression.isDone()).to.be.false;
+        }).then(() => {
+            return adease.notifyTimeUpdate(1001);
         }).then(() => {
             expect(impression.isDone()).to.be.true;
+        }).then(() => {
+            // Should only send beacons once.
+            return adease.notifyTimeUpdate(2000);
+        });
+    });
+
+    it('sends beacons for midrolls', () => {
+        nock('http://localhost')
+            .get('/')
+            .reply(200, FullConfig);
+
+        // Beacon recorder.
+        nock(/tidaltv/);
+        nock(/scorecardresearch/);
+        nock(/doubleclick/);
+        const impression = nock('http://sbs-beacons-adease.switchmedia.asia')
+            .get('/')
+            .reply(200);
+
+        const adease = new Adease();
+        return adease.configureFromURL('http://localhost').then(() => {
+            // Only send the impression after 1000ms
+            return adease.notifyTimeUpdate(1407514);
+        }).then(() => {
+            expect(impression.isDone()).to.be.false;
+        }).then(() => {
+            return adease.notifyTimeUpdate(1408515);
+        }).then(() => {
+            expect(impression.isDone()).to.be.true;
+        }).then(() => {
+            // Should only send beacons once.
+            return adease.notifyTimeUpdate(1418515);
         });
     });
 });
