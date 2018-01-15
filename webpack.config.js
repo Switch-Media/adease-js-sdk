@@ -30,7 +30,15 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
-  externals: ['axios'],
+  externals: {
+    lodash: {
+      commonjs: 'lodash',
+      commonjs2: 'lodash',
+      amd: 'lodash',
+      root: '_'
+    },
+    axios: 'axios'
+  },
   // Authored as a UMD library with the name 'adease'.
   output: {
     filename: 'index.js',

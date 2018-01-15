@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 import Configuration, { IConfigurationJSON, IStream, ITrackingURL } from "./Configuration";
 
-export default class {
+export default class Adease {
     config: Configuration;
     sentBeacons: ITrackingURL[];
 
