@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "docs": "rimraf docs && typedoc --mode modules --exclude '**/*.test.ts' --out docs/ ./src",
     "test": "mocha -r ts-node/register src/**/*test.ts",
     "watch": "mocha -r ts-node/register --watch --reporter min --watch-extensions ts src/**/*test.ts"
   },
@@ -24,9 +25,12 @@
     "chai-as-promised": "^7.1.1",
     "mocha": "^4.1.0",
     "nock": "^9.1.6",
+    "rimraf": "^2.6.2",
     "sinon": "^4.1.4",
     "ts-loader": "^3.2.0",
     "ts-node": "^4.1.0",
+    "typedoc": "^0.9.0",
+    "typedoc-plugin-internal-external": "^1.0.10",
     "typescript": "^2.6.2",
     "webpack": "^3.10.0"
   },

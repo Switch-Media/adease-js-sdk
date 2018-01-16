@@ -41,6 +41,9 @@ export interface IStream {
     url: string;
 }
 
+/**
+ * @internal
+ */
 export default class Configuration {
 
     private config: IConfiguration;
