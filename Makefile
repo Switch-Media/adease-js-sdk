@@ -1,7 +1,5 @@
-CWD = ${PWD}
-
 test:
-	docker run --rm --volume $(CWD):/code --workdir=/code adease-js-sdk/test 
+	docker run --rm adease-js-sdk/test 
 
 build:
 	docker build -t adease-js-sdk/test -f Dockerfile .
