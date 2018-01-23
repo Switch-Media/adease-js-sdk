@@ -1,12 +1,17 @@
+CWD=${PWD}
+
 test:
 	docker run --rm adease-js-sdk/test 
 
-build:
+docker-image:
 	docker build -t adease-js-sdk/test -f Dockerfile .
 
-unit: build test
+unit: docker-image test
 
-archive:
-	zip -r build/$(ARCHIVE_NAME).zip src tests composer.json composer.lock phpunit.xml README.md
+compile:
+	docker run --rm --volume $(CWD):/code adease-js-sdk/test sh -c "npm install && ./node_modules/.bin/webpack"
+
+archive: compile
+	zip -r build/$(ARCHIVE_NAME).zip src tests dist package.json README.md
 
 .PHONY: build
