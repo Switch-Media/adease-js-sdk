@@ -88,17 +88,16 @@ export default class Configuration {
         .filter(tURL => tURL.kind === 'clickthrough')
         .reduce((ads: IAd[], tURL: ITrackingURL) => {
             // Try to find an existing ad with this start time.
-            if (_.findIndex(ads, ad => ad.startTime === tURL.startTime) !== -1) {
+            if (ads.findIndex(ad => ad.startTime === tURL.startTime) !== -1) {
                 return ads;
             }
 
             // Get the tracking URLs for this ad.
-            const trackingURLs = _(this.config.trackingURLs)
+            const trackingURLs = this.config.trackingURLs
             .filter(t => 
                 t.adID === tURL.adID
                 && t.startTime >= tURL.startTime
-                && t.endTime <= tURL.endTime)
-            .value();
+                && t.endTime <= tURL.endTime);
 
             const ad: IAd = {
                 id: tURL.adID,
@@ -107,7 +106,7 @@ export default class Configuration {
                 trackingUrls: trackingURLs,
             };
 
-            return _.concat(ads, ad);
+            return ads.concat(ad);
         }, []);
     }
 
