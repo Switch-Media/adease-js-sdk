@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 export interface IAd {
     id: string;
     startTime: number;
@@ -68,8 +66,8 @@ export default class Configuration {
         return {
             trackingURLs:  json.media.trackingUrls.map(obj => ({
                 url: obj.url,
-                startTime: _.toNumber(obj.starttime),
-                endTime: _.toNumber(obj.endtime),
+                startTime: Number(obj.starttime),
+                endTime: Number(obj.endtime),
                 kind: obj.event,
                 adID: obj.adID,
             })),
