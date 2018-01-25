@@ -2,6 +2,8 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as nock from 'nock';
 
+import './testPolyfills';
+
 import Adease from './Adease';
 
 // Fixtures

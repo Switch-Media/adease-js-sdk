@@ -81,7 +81,10 @@ export default class Configuration {
     }
 
     public getAdBreaks(): IAd[] {
-        return _(this.config.trackingURLs)
+        if (!this.config || !this.config.trackingURLs) {
+            return [];
+        }
+        return this.config.trackingURLs
         .filter(tURL => tURL.kind === 'clickthrough')
         .reduce((ads: IAd[], tURL: ITrackingURL) => {
             // Try to find an existing ad with this start time.

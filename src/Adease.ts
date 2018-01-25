@@ -1,4 +1,3 @@
-import axios from "axios";
 import * as _ from "lodash";
 
 import Configuration, {
@@ -24,9 +23,8 @@ export default class Adease {
    * @return Promise<void>
    */
   public configureFromURL(url: string): Promise<undefined> {
-    return axios
-      .get(url)
-      .then(res => res.data as Promise<IConfigurationJSON>)
+    return fetch(url)
+      .then(res => res.json() as Promise<IConfigurationJSON>)
       .then(Configuration.fromJSON)
       .then(config => (this.config = config))
       .then(() => undefined);
@@ -60,7 +58,7 @@ export default class Adease {
               return Promise.resolve();
             }
             this.sentBeacons.push(tURL);
-            return axios.get(tURL.url);
+            return fetch(tURL.url);
           })
           .value();
       })
