@@ -66,7 +66,9 @@ export default class Adease {
               return Promise.resolve();
             }
             this.sentBeacons.push(tURL);
-            return fetch(tURL.url);
+            return fetch(tURL.url, {
+              mode: 'no-cors',
+            });
           });
       });
     return Promise.all(ps).then(() => undefined);
