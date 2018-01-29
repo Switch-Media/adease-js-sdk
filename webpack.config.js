@@ -8,7 +8,7 @@ const babelOptions = {
 module.exports = {
   entry: './src/index.ts',
   // Useful for development in downstream projects, should be stripped for production.
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   // Compile typescript, then apply babel to increase compatability across browser environments.
   module: {
     rules: [
