@@ -27,6 +27,17 @@ export default class Adease {
       .then(() => undefined);
   }
 
+
+  /**
+   * Downloads adease configuration from a URL, returning a promise
+   * that resolves with undefined when done.
+   * @param url string
+   * @return Promise<void>
+   */
+  public configureFromObject(object: any): void {
+    this.config = Configuration.fromJSON(object);
+  }
+
   public getStreams(): IStream[] {
     this.ensureSetup();
     return this.config.getConfig().streams;

@@ -15,6 +15,13 @@ describe('Adease', () => {
         expect(adease).to.be.an.instanceOf(Adease);
     });
 
+    it('processes configuration from an object', () => {
+        const adease = new Adease();
+        adease.configureFromObject(FullConfig);
+        expect(adease.config.getAdBreaks()).to.not.be.empty;
+        expect(adease.getStreams()[0].url).to.equal("http:\/\/sbs-adease.switchmedia.asia\/268\/adEase\/getManifest");
+    });
+
     it('retrieves and processes configuration', () => {
         nock('http://localhost')
             .get('/')

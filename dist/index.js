@@ -125,6 +125,18 @@ var Adease = function () {
                 return undefined;
             });
         }
+        /**
+         * Downloads adease configuration from a URL, returning a promise
+         * that resolves with undefined when done.
+         * @param url string
+         * @return Promise<void>
+         */
+
+    }, {
+        key: "configureFromObject",
+        value: function configureFromObject(object) {
+            this.config = Configuration_1.default.fromJSON(object);
+        }
     }, {
         key: "getStreams",
         value: function getStreams() {
