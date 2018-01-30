@@ -1,16 +1,22 @@
+import { Set } from "immutable";
+
 import Configuration, {
   IConfigurationJSON,
   IStream,
   ITrackingURL,
-  IAd
+  IAd,
+  LinearEvents,
+  EventType,
 } from "./Configuration";
 
 export default class Adease {
   config: Configuration;
-  sentBeacons: ITrackingURL[];
+  sentBeacons: Set<ITrackingURL>;
+  lastTimePosition: number;
 
   constructor() {
-    this.sentBeacons = [];
+    this.sentBeacons = Set<ITrackingURL>();
+    this.lastTimePosition = NaN;
   }
 
   /**
@@ -20,13 +26,13 @@ export default class Adease {
    * @return Promise<void>
    */
   public configureFromURL(url: string): Promise<undefined> {
+    this.reset();
     return fetch(url)
       .then(res => res.json() as Promise<IConfigurationJSON>)
       .then(Configuration.fromJSON)
-      .then(config => (this.config = config))
+      .then(_ => (this.config = _))
       .then(() => undefined);
   }
-
 
   /**
    * Downloads adease configuration from a URL, returning a promise
@@ -35,6 +41,7 @@ export default class Adease {
    * @return Promise<void>
    */
   public configureFromObject(object: any): void {
+    this.reset();
     this.config = Configuration.fromJSON(object);
   }
 
@@ -49,25 +56,30 @@ export default class Adease {
    */
   public notifyTimeUpdate(time: number): Promise<undefined> {
     this.ensureSetup();
-    return this.sendBeacons(time);
+
+    if (this.lastTimePosition === NaN) {
+      this.lastTimePosition = 0;
+    }
+    return this.sendBeacons(time)
+      .then(() => (this.lastTimePosition = time))
+      .then(() => undefined);
   }
 
   /**
    * @return A promise that resolves once all beacons are sent.
    */
   private sendBeacons(time: number): Promise<undefined> {
-    const ps = this.getAdsForTime(time)
-      .map(ad => {
+    const ps = this.getAdsForTime(time).map(ad => {
         return ad.trackingUrls
-          .filter(tURL => tURL.kind === "impression")
-          .filter(tURL => tURL.startTime < time)
+          .filter(tURL => LinearEvents.includes(tURL.kind as EventType))
+          .filter(tURL => tURL.startTime < time && tURL.startTime > this.lastTimePosition)
           .map(tURL => {
             if (this.sentBeacons.includes(tURL)) {
               return Promise.resolve();
             }
-            this.sentBeacons.push(tURL);
+          this.sentBeacons = this.sentBeacons.add(tURL);
             return fetch(tURL.url, {
-              mode: 'no-cors',
+            mode: "no-cors"
             });
           });
       });
@@ -82,7 +94,14 @@ export default class Adease {
 
   private ensureSetup() {
     if (!this.config) {
-      throw "Adease not setup, but method called";
+      throw new Error("Adease not setup, but method called");
     }
+  }
+
+  /**
+   * Resets the internal state of the object so that it can be reused.
+   */
+  private reset() {
+    this.sentBeacons = this.sentBeacons.clear();
   }
 }

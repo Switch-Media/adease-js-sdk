@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		module.exports = factory(require("immutable"));
 	else if(typeof define === 'function' && define.amd)
-		define([], factory);
+		define(["immutable"], factory);
 	else if(typeof exports === 'object')
-		exports["adease"] = factory();
+		exports["adease"] = factory(require("immutable"));
 	else
-		root["adease"] = factory();
-})(typeof self !== 'undefined' ? self : this, function() {
+		root["adease"] = factory(root["immutable"]);
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -96,13 +96,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Configuration_1 = __webpack_require__(2);
+var immutable_1 = __webpack_require__(2);
+var Configuration_1 = __webpack_require__(3);
 
 var Adease = function () {
     function Adease() {
         _classCallCheck(this, Adease);
 
-        this.sentBeacons = [];
+        this.sentBeacons = immutable_1.Set();
+        this.lastTimePosition = NaN;
     }
     /**
      * Downloads adease configuration from a URL, returning a promise
@@ -117,10 +119,11 @@ var Adease = function () {
         value: function configureFromURL(url) {
             var _this = this;
 
+            this.reset();
             return fetch(url).then(function (res) {
                 return res.json();
-            }).then(Configuration_1.default.fromJSON).then(function (config) {
-                return _this.config = config;
+            }).then(Configuration_1.default.fromJSON).then(function (_) {
+                return _this.config = _;
             }).then(function () {
                 return undefined;
             });
@@ -135,6 +138,7 @@ var Adease = function () {
     }, {
         key: "configureFromObject",
         value: function configureFromObject(object) {
+            this.reset();
             this.config = Configuration_1.default.fromJSON(object);
         }
     }, {
@@ -151,8 +155,17 @@ var Adease = function () {
     }, {
         key: "notifyTimeUpdate",
         value: function notifyTimeUpdate(time) {
+            var _this2 = this;
+
             this.ensureSetup();
-            return this.sendBeacons(time);
+            if (this.lastTimePosition === NaN) {
+                this.lastTimePosition = 0;
+            }
+            return this.sendBeacons(time).then(function () {
+                return _this2.lastTimePosition = time;
+            }).then(function () {
+                return undefined;
+            });
         }
         /**
          * @return A promise that resolves once all beacons are sent.
@@ -161,20 +174,20 @@ var Adease = function () {
     }, {
         key: "sendBeacons",
         value: function sendBeacons(time) {
-            var _this2 = this;
+            var _this3 = this;
 
             var ps = this.getAdsForTime(time).map(function (ad) {
                 return ad.trackingUrls.filter(function (tURL) {
-                    return tURL.kind === "impression";
+                    return Configuration_1.LinearEvents.includes(tURL.kind);
                 }).filter(function (tURL) {
-                    return tURL.startTime < time;
+                    return tURL.startTime < time && tURL.startTime > _this3.lastTimePosition;
                 }).map(function (tURL) {
-                    if (_this2.sentBeacons.includes(tURL)) {
+                    if (_this3.sentBeacons.includes(tURL)) {
                         return Promise.resolve();
                     }
-                    _this2.sentBeacons.push(tURL);
+                    _this3.sentBeacons = _this3.sentBeacons.add(tURL);
                     return fetch(tURL.url, {
-                        mode: 'no-cors'
+                        mode: "no-cors"
                     });
                 });
             });
@@ -193,8 +206,17 @@ var Adease = function () {
         key: "ensureSetup",
         value: function ensureSetup() {
             if (!this.config) {
-                throw "Adease not setup, but method called";
+                throw new Error("Adease not setup, but method called");
             }
+        }
+        /**
+         * Resets the internal state of the object so that it can be reused.
+         */
+
+    }, {
+        key: "reset",
+        value: function reset() {
+            this.sentBeacons = this.sentBeacons.clear();
         }
     }]);
 
@@ -205,6 +227,12 @@ exports.default = Adease;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -215,6 +243,46 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var EventType;
+(function (EventType) {
+    // Basic metrics
+    EventType["Impression"] = "impression";
+    EventType["Clickthrough"] = "clickthrough";
+    EventType["Stream"] = "stream";
+    EventType["Fullscreen"] = "fullscreen";
+    EventType["ExitFullscreen"] = "exitFullscreen";
+    EventType["OtherAdInteraction"] = "otherAdInteraction";
+    // Linear Ad Metrics
+    EventType["Start"] = "start";
+    EventType["FirstQuartile"] = "firstQuartile";
+    EventType["MidPoint"] = "midpoint";
+    EventType["ThirdQuartile"] = "thirdQuartile";
+    EventType["Complete"] = "complete";
+    EventType["AcceptInvitationLinear"] = "acceptInvitationLinear";
+    EventType["TimeSpentViewing"] = "timeSpentViewing";
+    EventType["Progress"] = "progress";
+    EventType["CloseLinear"] = "closeLinear";
+    // Nonlinear Ad Metrics
+    EventType["CreativeView"] = "creativeView";
+    EventType["AcceptInvitation"] = "acceptInvitation";
+    EventType["AdExpand"] = "adExpand";
+    EventType["AdCollapse"] = "adCollapse";
+    EventType["Minimize"] = "minimize";
+    EventType["Close"] = "close";
+    EventType["OverlayViewDuration"] = "overlayViewDuration";
+    // Player Operation Metrics (for both Linear and Nonlinear ads)
+    EventType["Mute"] = "mute";
+    EventType["Unmute"] = "unmute";
+    EventType["Pause"] = "pause";
+    EventType["Resume"] = "resume";
+    EventType["Rewind"] = "rewind";
+    EventType["Skip"] = "skip";
+    EventType["PlayerExpand"] = "playerExpand";
+    EventType["PlayerCollapse"] = "playerCollapse";
+})(EventType = exports.EventType || (exports.EventType = {}));
+exports.NonLinearEvents = [EventType.CreativeView, EventType.AcceptInvitation, EventType.AdExpand, EventType.Minimize, EventType.Close, EventType.OverlayViewDuration];
+exports.LinearEvents = [EventType.Start, EventType.Impression, EventType.FirstQuartile, EventType.MidPoint, EventType.ThirdQuartile, EventType.Complete, EventType.AcceptInvitationLinear, EventType.TimeSpentViewing, EventType.Progress, EventType.CloseLinear];
+exports.PlayerEvents = [EventType.Mute, EventType.Unmute, EventType.Pause, EventType.Resume, EventType.Rewind, EventType.Skip, EventType.PlayerExpand, EventType.PlayerCollapse];
 /**
  * @internal
  */
@@ -235,7 +303,7 @@ var Configuration = function () {
                 return [];
             }
             return this.config.trackingURLs.filter(function (tURL) {
-                return tURL.kind === 'clickthrough';
+                return tURL.kind === "clickthrough";
             }).reduce(function (ads, tURL) {
                 // Try to find an existing ad with this start time.
                 if (ads.findIndex(function (ad) {

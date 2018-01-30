@@ -1,100 +1,157 @@
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as nock from 'nock';
+import { expect } from "chai";
+import * as sinon from "sinon";
 
-import './testPolyfills';
+import Adease from "./Adease";
 
-import Adease from './Adease';
+declare let global: any;
 
 // Fixtures
-import FullConfig from '../fixtures/sample_full_config';
+import FullConfig from "../fixtures/sample_full_config";
 
-describe('Adease', () => {
-    it('initialises', () => { 
-        const adease = new Adease();
-        expect(adease).to.be.an.instanceOf(Adease);
+describe("Adease", () => {
+  it("initialises", () => {
+    const adease = new Adease();
+    expect(adease).to.be.an.instanceOf(Adease);
+  });
+
+  it("processes configuration from an object", () => {
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+    expect(adease.config.getAdBreaks()).to.not.be.empty;
+    expect(adease.getStreams()[0].url).to.equal(
+      "http://sbs-adease.switchmedia.asia/268/adEase/getManifest"
+    );
+  });
+
+  it("retrieves and processes configuration", () => {
+    const fetch = (url: string) => {
+      return Promise.resolve({
+        json: () => FullConfig
+      });
+    };
+
+    global.fetch = sinon.spy(fetch);
+
+    const adease = new Adease();
+    return adease.configureFromURL("http://localhost").then(value => {
+      expect(value).to.be.undefined;
+      expect(adease.config.getAdBreaks()).to.not.be.empty;
+      expect(adease.getStreams()[0].url).to.equal(
+        "http://sbs-adease.switchmedia.asia/268/adEase/getManifest"
+      );
     });
+  });
 
-    it('processes configuration from an object', () => {
-        const adease = new Adease();
-        adease.configureFromObject(FullConfig);
-        expect(adease.config.getAdBreaks()).to.not.be.empty;
-        expect(adease.getStreams()[0].url).to.equal("http:\/\/sbs-adease.switchmedia.asia\/268\/adEase\/getManifest");
-    });
+  it("sends beacons for prerolls", () => {
+    const fetch = (url: string, options?: any) => Promise.resolve();
 
-    it('retrieves and processes configuration', () => {
-        nock('http://localhost')
-            .get('/')
-            .reply(200, FullConfig);
+    const fetchSpy = (global.fetch = sinon.spy(fetch));
 
-        const adease = new Adease();
-        return adease.configureFromURL('http://localhost').then(value => {
-            expect(value).to.be.undefined;
-            expect(adease.config.getAdBreaks()).to.not.be.empty;
-            expect(adease.getStreams()[0].url).to.equal("http:\/\/sbs-adease.switchmedia.asia\/268\/adEase\/getManifest");
-        });
-    });
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+    // Only send the impression after 1000ms
+    return adease
+      .notifyTimeUpdate(100)
+      .then(() => {
+        expect(
+          fetchSpy.calledWith("http://sbs-beacons-adease.switchmedia.asia")
+        ).to.be.false;
+      })
+      .then(() => {
+        return adease.notifyTimeUpdate(1001);
+      })
+      .then(() => {
+        expect(
+          fetchSpy.calledWith("http://sbs-beacons-adease.switchmedia.asia")
+        ).to.be.true;
+        expect(fetchSpy.callCount).to.equal(1);
+      })
+      .then(() => {
+        // Should only send beacons once.
+        return adease.notifyTimeUpdate(2000);
+      })
+      .then(() => {
+        expect(fetchSpy.callCount).to.equal(1);
+      });
+  });
 
-    it('sends beacons for prerolls', () => {
-        nock('http://localhost')
-            .get('/')
-            .reply(200, FullConfig);
+  it("sends beacons for midrolls", () => {
+    const fetch = (url: string, options?: any) => Promise.resolve();
 
-        // Beacon recorder.
-        nock(/tidaltv/);
-        nock(/scorecardresearch/);
-        nock(/doubleclick/);
-        const impression = nock('http://sbs-beacons-adease.switchmedia.asia')
-            .get('/')
-            .reply(200);
+    const fetchSpy = (global.fetch = sinon.spy(fetch));
 
-        const adease = new Adease();
-        return adease.configureFromURL('http://localhost').then(() => {
-            // Only send the impression after 1000ms
-            return adease.notifyTimeUpdate(100);
-        }).then(() => {
-            expect(impression.isDone()).to.be.false;
-        }).then(() => {
-            return adease.notifyTimeUpdate(1001);
-        }).then(() => {
-            expect(impression.isDone()).to.be.true;
-        }).then(() => {
-            // Should only send beacons once.
-            return adease.notifyTimeUpdate(2000);
-        });
-    });
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
 
-    it('sends beacons for midrolls', () => {
-        nock('http://localhost')
-            .get('/')
-            .reply(200, FullConfig);
+    // Only send the impression after 1000ms
+    return adease
+      .notifyTimeUpdate(1407514)
+      .then(() => {
+        expect(
+          fetchSpy.calledWith("http://sbs-beacons-adease.switchmedia.asia")
+        ).to.be.false;
+        expect(fetchSpy.callCount).to.equal(0);
+      })
+      .then(() => {
+        return adease.notifyTimeUpdate(1408515);
+      })
+      .then(() => {
+        expect(
+          fetchSpy.calledWith("http://sbs-beacons-adease.switchmedia.asia")
+        ).to.be.true;
+        expect(fetchSpy.callCount).to.equal(19);
+      })
+      .then(() => {
+        // Should only send beacons once.
+        return adease.notifyTimeUpdate(1418515);
+      })
+      .then(() => {
+        expect(fetchSpy.callCount).to.equal(23);
+      });
+  });
 
-        // Beacon recorder.
-        nock(/tidaltv/);
-        nock(/scorecardresearch/);
-        nock(/doubleclick/);
-        const impression = nock('http://sbs-beacons-adease.switchmedia.asia')
-            .get('/')
-            .reply(200);
+  it("sends beacons for quartiles", () => {
+    const fetch = (url: string, options?: any) => Promise.resolve();
 
-        const adease = new Adease();
-        return adease.configureFromURL('http://localhost').then(() => {
-            // Only send the impression after 1000ms
-            return adease.notifyTimeUpdate(1407514);
-        }).then(() => {
-            expect(impression.isDone()).to.be.false;
-        }).then(() => {
-            return adease.notifyTimeUpdate(1408515);
-        }).then(() => {
-            expect(impression.isDone()).to.be.true;
-        }).then(() => {
-            // Should only send beacons once.
-            return adease.notifyTimeUpdate(1418515);
-        });
-    });
-});
+    const fetchSpy = (global.fetch = sinon.spy(fetch));
 
-afterEach(() => {
-    // Cleans all nock state between tests, avoiding pollution.
-    nock.cleanAll();
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+
+    // Only send the impression after 1000ms
+    return adease
+      .notifyTimeUpdate(0)
+      .then(() => {
+        expect(
+          fetchSpy.calledWith("http://firstQuartile-76895")
+        ).to.be.false;
+        expect(fetchSpy.callCount).to.equal(0);
+      })
+      .then(() => {
+        return adease.notifyTimeUpdate(7700);
+      })
+      .then(() => {
+        expect(
+          fetchSpy.calledWith("http://firstQuartile-76895")
+        ).to.be.true;
+        expect(fetchSpy.callCount).to.equal(5);
+      })
+      .then(() => {
+        // Should only send beacons once.
+        return adease.notifyTimeUpdate(7777);
+      })
+      .then(() => {
+        expect(fetchSpy.callCount).to.equal(5);
+      })
+      .then(() => {
+        // Should send midpoint.
+        return adease.notifyTimeUpdate(15500);
+      })
+      .then(() => {
+        expect(
+            fetchSpy.calledWith("http://midpoint-76895")
+          ).to.be.true;
+        expect(fetchSpy.callCount).to.equal(9);
+      });
+  });
 });

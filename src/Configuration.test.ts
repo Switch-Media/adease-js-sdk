@@ -17,7 +17,7 @@ describe('Configuration', () => {
 
     it('should parse tracking urls', () => {
         const config = Configuration.parseFromObject(FullConfig)!;
-        expect(config.trackingURLs).to.have.length(548);
+        expect(config.trackingURLs).to.have.length(535);
         expect(config.trackingURLs[0].adID).to.equal('76895');
         expect(config.trackingURLs[0].startTime).to.equal(1000);
         expect(config.trackingURLs[0].endTime).to.equal(1000);
@@ -50,6 +50,6 @@ describe('Configuration', () => {
 
     it('should get tracking urls', () => {
         const config = Configuration.fromJSON(FullConfig);
-        expect(config.getTrackingURLs()).to.have.length(548);
+        expect(config.getTrackingURLs()).to.have.length(535);
     });
 });

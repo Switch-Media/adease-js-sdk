@@ -86,136 +86,6 @@ export default {
         },
         {
           "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/trk-apse.tidaltv.com\/ILogger.aspx?event=imp&type=1&adId=25f86c88-b25a-4627-9d91-b7b82154c6bc&fmid=803830&mt=1&pid=26585&rand=1358042817&mid=966614&pcid=11&xf=25&imptimestamp=20171017044513&ssl=1&pcv=2000&cid=1383258&g=15483&affine=&udcs=1&dd=3-1012-0-4&ttid=ebb6e33d-d25c-41a3-ad26-5f13276503fc&hhudcs=0&udps=3%3d3%3b4%3d0&fc=1&et=1:1_2:1_4906:1&brav=7050&dvav=11306&osav=7031&cd=0,1,0_CgA1_CgA1_DCB64&pa=CgA%3d&isp=0&uocs=15&ap=0&dh=sbs.com.au&nd=com.au&ltid=6856913365938843248&dr=1",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/sb.scorecardresearch.com\/p?c1=3&c2=18411729&c3=398547&c4=803830&c5=26585&c6=&c10=1&c11=&c13=&c16=vid&cj=1&ax_fwd=1&vce4v=1&rn=1358042817###cs",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/ad.doubleclick.net\/ddm\/trackimp\/N3197.134502.VIDEOLOGY\/B20204958.204554255;dc_trk_aid=404393263;dc_trk_cid=92605211;ord=1358042817;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=?",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/cm.g.doubleclick.net\/pixel?google_nid=tidaltv&google_hm=PeO261zSo0GtJl8TJ2UD_A%3d%3d",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/sync.tidaltv.com\/GenericUserSync.ashx?dpid=dp1&pid=26585",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/sync.tidaltv.com\/GenericUserSync.ashx?dpid=dp2&pid=26585",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/sync.tidaltv.com\/GenericUserSync.ashx?dpid=dp3&pid=26585",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/sync.tidaltv.com\/GenericUserSync.ashx?dpid=ex1&pid=26585",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/sync.tidaltv.com\/GenericUserSync.ashx?dpid=ex2&pid=26585",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/sb.scorecardresearch.com\/p?c1=1&c2=5989497&c4=26585&c5=01&c6=803830",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/uav.tidaltv.com\/3PDPHandler.aspx?tpdp=7&app=2&pid=26585",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/sp.adbrn.com\/match?syncid=videol4_facc13ae-4d04-4b4a-9618-dea89a01d4de&cid=ebb6e33d-d25c-41a3-ad26-5f13276503fc",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
-          "offset": "1000",
-          "starttime": "1000",
-          "endtime": "1000",
-          "event": "impression",
-          "url": "https:\/\/securepubads.g.doubleclick.net\/pcs\/view?xai=AKAOjsud18qHKpGWx1pr0TePn_BOHIFe8a5g8kuK2miXafjJZYOIUx-MSmv9yi6BM75OskYN-wY2L-dqqXvyDZ_BGcpCD9aKKU4z2NyOZPE7dUd7x5hW1OYxf9xQHYB8mzEN51qR7Tmu4fuZj8PkNlt14D69rPuwTKQwMokCu3MXj6Or2CoT82385tLDlirmZDqLnyPPaZM6bAkGZEQ9YY-IQOBioxpcPizsPUsfVTz0qtXGfUgD115Tb_44QZlRCrGoRM2eiHT9b9mEAhZELpwmQmwsJq6zTnPo&sai=AMfl-YSvWxrAEiTT7mpkFkavdBav4K86iHmCLrRFZMrLDN6FjoRhQ0PjArpO2jcqdd0&sig=Cg0ArKJSzBXuOJ4Gz_qUEAE&adurl=",
-          "adID": "76895",
-          "adVideoID": "2118362"
-        },
-        {
-          "_type": "array",
           "starttime": "0",
           "endtime": "30514.689",
           "event": "clickthrough",
@@ -284,7 +154,7 @@ export default {
           "starttime": "7628.67225",
           "endtime": "7628.67225",
           "event": "firstQuartile",
-          "url": "http:\/\/sbs-beacons-adease.switchmedia.asia\/268\/adEase\/trackEvent?msg=ad_firstQuartile&data=switchcl-e=ad_firstQuartile-pid=adease_session_99027655-sid=99027655-pos=7.62867225-v=1943910-a=2118362-s=268-d=30.514688999999997-th=2-an=0-platform=ios-device=iphone-context=ios-cuepointID=0_0-adOrder=0&sessionID=99027655&token=",
+          "url": "http:\/\/firstQuartile-76895",
           "adID": "76895",
           "adVideoID": "2118362"
         },
@@ -324,7 +194,7 @@ export default {
           "starttime": "15257.3445",
           "endtime": "15257.3445",
           "event": "midpoint",
-          "url": "http:\/\/sbs-beacons-adease.switchmedia.asia\/268\/adEase\/trackEvent?msg=ad_midpoint&data=switchcl-e=ad_midpoint-pid=adease_session_99027655-sid=99027655-pos=15.2573445-v=1943910-a=2118362-s=268-d=30.514688999999997-th=2-an=0-platform=ios-device=iphone-context=ios-cuepointID=0_0-adOrder=0&sessionID=99027655&token=",
+          "url": "http:\/\/midpoint-76895",
           "adID": "76895",
           "adVideoID": "2118362"
         },
