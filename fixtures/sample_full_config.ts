@@ -274,7 +274,7 @@ export default {
           "starttime": "30514.689",
           "endtime": "30514.689",
           "event": "complete",
-          "url": "http:\/\/sbs-beacons-adease.switchmedia.asia\/268\/adEase\/trackEvent?msg=ad_complete&data=switchcl-e=ad_complete-pid=adease_session_99027655-sid=99027655-pos=30.514689-v=1943910-a=2118362-s=268-d=30.514688999999997-th=2-an=0-platform=ios-device=iphone-context=ios-cuepointID=0_0-adOrder=0&sessionID=99027655&token=",
+          "url": "http:\/\/complete-76895",
           "adID": "76895",
           "adVideoID": "2118362"
         },

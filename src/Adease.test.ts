@@ -152,6 +152,16 @@ describe("Adease", () => {
             fetchSpy.calledWith("http://midpoint-76895")
           ).to.be.true;
         expect(fetchSpy.callCount).to.equal(9);
+      })
+      .then(() => {
+        // Should send midpoint.
+        return adease.notifyTimeUpdate(35000);
+      })
+      .then(() => {
+        expect(
+            fetchSpy.calledWith("http://complete-76895")
+          ).to.be.true;
+        expect(fetchSpy.callCount).to.equal(18);
       });
   });
 });

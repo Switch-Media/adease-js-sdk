@@ -6,7 +6,7 @@ import Configuration, {
   ITrackingURL,
   IAd,
   LinearEvents,
-  EventType,
+  EventType
 } from "./Configuration";
 
 export default class Adease {
@@ -69,27 +69,27 @@ export default class Adease {
    * @return A promise that resolves once all beacons are sent.
    */
   private sendBeacons(time: number): Promise<undefined> {
-    const ps = this.getAdsForTime(time).map(ad => {
-        return ad.trackingUrls
-          .filter(tURL => LinearEvents.includes(tURL.kind as EventType))
-          .filter(tURL => tURL.startTime < time && tURL.startTime > this.lastTimePosition)
-          .map(tURL => {
-            if (this.sentBeacons.includes(tURL)) {
-              return Promise.resolve();
-            }
-          this.sentBeacons = this.sentBeacons.add(tURL);
-            return fetch(tURL.url, {
-            mode: "no-cors"
-            });
-          });
+    const ps = this.getBeaconsForRange(this.lastTimePosition, time)
+      .filter(tURL => LinearEvents.includes(tURL.kind as EventType))
+      .filter(
+        tURL => tURL.startTime < time && tURL.startTime > this.lastTimePosition
+      )
+      .map(tURL => {
+        if (this.sentBeacons.includes(tURL)) {
+          return Promise.resolve();
+        }
+        this.sentBeacons = this.sentBeacons.add(tURL);
+        return fetch(tURL.url, {
+          mode: "no-cors"
+        }).then(() => undefined);
       });
     return Promise.all(ps).then(() => undefined);
   }
 
-  private getAdsForTime(time: number): IAd[] {
-    return this.config.getAdBreaks().filter(
-      ad => ad.startTime <= time && ad.endTime >= time
-    );
+  private getBeaconsForRange(start: number, end: number): ITrackingURL[] {
+    return this.config
+      .getTrackingURLs()
+      .filter(tURL => tURL.startTime <= end && tURL.endTime >= start);
   }
 
   private ensureSetup() {

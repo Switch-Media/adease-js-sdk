@@ -176,19 +176,19 @@ var Adease = function () {
         value: function sendBeacons(time) {
             var _this3 = this;
 
-            var ps = this.getAdsForTime(time).map(function (ad) {
-                return ad.trackingUrls.filter(function (tURL) {
-                    return Configuration_1.LinearEvents.includes(tURL.kind);
-                }).filter(function (tURL) {
-                    return tURL.startTime < time && tURL.startTime > _this3.lastTimePosition;
-                }).map(function (tURL) {
-                    if (_this3.sentBeacons.includes(tURL)) {
-                        return Promise.resolve();
-                    }
-                    _this3.sentBeacons = _this3.sentBeacons.add(tURL);
-                    return fetch(tURL.url, {
-                        mode: "no-cors"
-                    });
+            var ps = this.getBeaconsForRange(this.lastTimePosition, time).filter(function (tURL) {
+                return Configuration_1.LinearEvents.includes(tURL.kind);
+            }).filter(function (tURL) {
+                return tURL.startTime < time && tURL.startTime > _this3.lastTimePosition;
+            }).map(function (tURL) {
+                if (_this3.sentBeacons.includes(tURL)) {
+                    return Promise.resolve();
+                }
+                _this3.sentBeacons = _this3.sentBeacons.add(tURL);
+                return fetch(tURL.url, {
+                    mode: "no-cors"
+                }).then(function () {
+                    return undefined;
                 });
             });
             return Promise.all(ps).then(function () {
@@ -196,10 +196,10 @@ var Adease = function () {
             });
         }
     }, {
-        key: "getAdsForTime",
-        value: function getAdsForTime(time) {
-            return this.config.getAdBreaks().filter(function (ad) {
-                return ad.startTime <= time && ad.endTime >= time;
+        key: "getBeaconsForRange",
+        value: function getBeaconsForRange(start, end) {
+            return this.config.getTrackingURLs().filter(function (tURL) {
+                return tURL.startTime <= end && tURL.endTime >= start;
             });
         }
     }, {
