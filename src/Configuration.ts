@@ -125,7 +125,7 @@ export default class Configuration {
   public static fromJSON(config: IConfigurationJSON): Configuration {
     const parsedConfiguration = Configuration.parseFromObject(config);
     if (parsedConfiguration === null) {
-      throw "error parsing configuration";
+      throw new Error("error parsing configuration");
     }
     return new Configuration(parsedConfiguration);
   }
