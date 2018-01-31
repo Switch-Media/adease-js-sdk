@@ -339,7 +339,7 @@ var Configuration = function () {
         value: function fromJSON(config) {
             var parsedConfiguration = Configuration.parseFromObject(config);
             if (parsedConfiguration === null) {
-                throw "error parsing configuration";
+                throw new Error("error parsing configuration");
             }
             return new Configuration(parsedConfiguration);
         }
