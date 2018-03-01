@@ -164,4 +164,17 @@ describe("Adease", () => {
         expect(fetchSpy.callCount).to.equal(18);
       });
   });
+
+  it("returns the asset time position", () => {
+    // Setup.
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+
+    // Make assertions.
+    expect(adease.getAssetTime(0)).to.equal(0);
+    // 40 seconds (right after pre-roll).
+    expect(adease.getAssetTime(40 * 1000)).to.equal(9485.31);
+    // 3,728 seconds (~ 1 hour)
+    expect(adease.getAssetTime(3728 * 1000)).to.equal(3576240.14);
+  });
 });

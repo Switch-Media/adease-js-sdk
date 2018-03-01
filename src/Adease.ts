@@ -9,6 +9,8 @@ import Configuration, {
   EventType
 } from "./Configuration";
 
+import { round } from './Util';
+
 export default class Adease {
   config: Configuration;
   sentBeacons: Set<ITrackingURL>;
@@ -53,16 +55,29 @@ export default class Adease {
   /**
    * Notify adease that a time update has occured. This may fire off beacons.
    * Returns a promise that resolves once all underlying actions have completed.
+   * 
+   * @param timeMs number Time in milliseconds.
    */
-  public notifyTimeUpdate(time: number): Promise<undefined> {
+  public notifyTimeUpdate(timeMs: number): Promise<undefined> {
     this.ensureSetup();
 
     if (this.lastTimePosition === NaN) {
       this.lastTimePosition = 0;
     }
-    return this.sendBeacons(time)
-      .then(() => (this.lastTimePosition = time))
+    return this.sendBeacons(timeMs)
+      .then(() => (this.lastTimePosition = timeMs))
       .then(() => undefined);
+  }
+
+  /**
+   * 
+   * @param streamTimeMs number Time in milliseconds.
+   * @returns number Time in milliseconds.
+   */
+  public getAssetTime(streamTimeMs: number): number {
+    // Find the ads before the given time.
+    const ads = this.config.getAdBreaks().filter(ad => ad.startTime < streamTimeMs && ad.endTime < streamTimeMs);
+    return round(streamTimeMs - ads.map(ad => ad.endTime - ad.startTime).reduce((a, b) => a + b, 0));
   }
 
   /**
