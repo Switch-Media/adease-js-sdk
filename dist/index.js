@@ -98,6 +98,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 Object.defineProperty(exports, "__esModule", { value: true });
 var immutable_1 = __webpack_require__(2);
 var Configuration_1 = __webpack_require__(3);
+var Util_1 = __webpack_require__(4);
 
 var Adease = function () {
     function Adease() {
@@ -150,22 +151,43 @@ var Adease = function () {
         /**
          * Notify adease that a time update has occured. This may fire off beacons.
          * Returns a promise that resolves once all underlying actions have completed.
+         *
+         * @param timeMs number Time in milliseconds.
          */
 
     }, {
         key: "notifyTimeUpdate",
-        value: function notifyTimeUpdate(time) {
+        value: function notifyTimeUpdate(timeMs) {
             var _this2 = this;
 
             this.ensureSetup();
             if (this.lastTimePosition === NaN) {
                 this.lastTimePosition = 0;
             }
-            return this.sendBeacons(time).then(function () {
-                return _this2.lastTimePosition = time;
+            return this.sendBeacons(timeMs).then(function () {
+                return _this2.lastTimePosition = timeMs;
             }).then(function () {
                 return undefined;
             });
+        }
+        /**
+         *
+         * @param streamTimeMs number Time in milliseconds.
+         * @returns number Time in milliseconds.
+         */
+
+    }, {
+        key: "getAssetTime",
+        value: function getAssetTime(streamTimeMs) {
+            // Find the ads before the given time.
+            var ads = this.config.getAdBreaks().filter(function (ad) {
+                return ad.startTime < streamTimeMs && ad.endTime < streamTimeMs;
+            });
+            return Util_1.round(streamTimeMs - ads.map(function (ad) {
+                return ad.endTime - ad.startTime;
+            }).reduce(function (a, b) {
+                return a + b;
+            }, 0));
         }
         /**
          * @return A promise that resolves once all beacons are sent.
@@ -372,6 +394,23 @@ var Configuration = function () {
 }();
 
 exports.default = Configuration;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Rounds to two decimal places.
+ * @param n number to round
+ */
+function round(n) {
+  return Math.round(n * 100) / 100;
+}
+exports.round = round;
 
 /***/ })
 /******/ ]);
