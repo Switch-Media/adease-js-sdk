@@ -172,9 +172,20 @@ describe("Adease", () => {
 
     // Make assertions.
     expect(adease.getAssetTime(0)).to.equal(0);
+
+    // During the first pre-roll.
+    expect(adease.getAssetTime(15 * 1000)).to.equal(0);
+
     // 40 seconds (right after pre-roll).
     expect(adease.getAssetTime(40 * 1000)).to.equal(9485.31);
+
     // 3,728 seconds (~ 1 hour)
     expect(adease.getAssetTime(3728 * 1000)).to.equal(3576240.14);
+
+    // Calculates position correctly when in the middle of an ad.
+    expect(adease.getAssetTime(3743864.545)).to.equal(3577000);
+
+    // Uses <= comparison on end times.
+    expect(adease.getAssetTime(3743874.545)).to.equal(3577000);
   });
 });
