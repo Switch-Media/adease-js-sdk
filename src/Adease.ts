@@ -75,9 +75,24 @@ export default class Adease {
    * @returns number Time in milliseconds.
    */
   public getAssetTime(streamTimeMs: number): number {
+    const add = (a: number, b: number) => a + b;
+
     // Find the ads before the given time.
-    const ads = this.config.getAdBreaks().filter(ad => ad.startTime < streamTimeMs && ad.endTime < streamTimeMs);
-    return round(streamTimeMs - ads.map(ad => ad.endTime - ad.startTime).reduce((a, b) => a + b, 0));
+    const allAds = this.config.getAdBreaks()
+      .filter(ad => ad.startTime < streamTimeMs);
+
+    const previousAdsDuration = allAds
+      .filter(ad => ad.endTime <= streamTimeMs)
+      .map(ad => ad.endTime - ad.startTime)
+      .reduce(add, 0);
+
+    const inProgressAdsDuration = allAds
+      .filter(ad => ad.endTime > streamTimeMs)
+      .map(ad => streamTimeMs - ad.startTime)
+      .reduce(add, 0);
+
+
+    return round(streamTimeMs - (previousAdsDuration + inProgressAdsDuration));
   }
 
   /**
