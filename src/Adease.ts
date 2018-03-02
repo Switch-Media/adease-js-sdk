@@ -76,13 +76,26 @@ export default class Adease {
   public getStreamTime(assetTimeMs: number): number {
     this.ensureSetup();
 
-    return this.getAds().reduce((position: number, ad: IAd) => {
-      if (ad.startTime < position) {
-        return position + (ad.endTime - ad.startTime);
+    // Calculate the true start times of each ad.
+    const ads = this.getAds().sort((a: IAd, b: IAd): number => {
+      if (a.startTime < b.startTime) {
+        return -1;
       }
+      if (a.startTime > b.startTime) {
+        return 1;
+      }
+      return 0;
+    });
 
-      return position;
-    }, assetTimeMs);
+    let position = assetTimeMs;
+    for (const ad of ads) {
+      // Position is in the middle of an ad. Move to end.
+      if (position >= ad.startTime) {
+        position += ad.endTime;
+      }
+    }
+
+    return round(position);
   }
 
   /**
