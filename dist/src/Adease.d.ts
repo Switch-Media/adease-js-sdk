@@ -1,9 +1,8 @@
-import { Set } from "immutable";
-import Configuration, { IStream, ITrackingURL, IAd } from "./Configuration";
+import { IStream, IAd } from "./Configuration";
 export default class Adease {
-    config: Configuration;
-    sentBeacons: Set<ITrackingURL>;
-    lastTimePosition: number;
+    private config;
+    private sentBeacons;
+    private lastTimePosition;
     constructor();
     /**
      * Downloads adease configuration from a URL, returning a promise
@@ -36,6 +35,11 @@ export default class Adease {
      * Returns the ads.
      */
     getAds(): IAd[];
+    /**
+     *
+     * @param timeMs Time in milliseconds.
+     */
+    getAdsAtTime(timeMs: number): IAd[];
     /**
      *
      * @param streamTimeMs number Time in milliseconds.

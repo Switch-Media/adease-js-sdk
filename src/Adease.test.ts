@@ -122,18 +122,14 @@ describe("Adease", () => {
     return adease
       .notifyTimeUpdate(0)
       .then(() => {
-        expect(
-          fetchSpy.calledWith("http://firstQuartile-76895")
-        ).to.be.false;
+        expect(fetchSpy.calledWith("http://firstQuartile-76895")).to.be.false;
         expect(fetchSpy.callCount).to.equal(0);
       })
       .then(() => {
         return adease.notifyTimeUpdate(7700);
       })
       .then(() => {
-        expect(
-          fetchSpy.calledWith("http://firstQuartile-76895")
-        ).to.be.true;
+        expect(fetchSpy.calledWith("http://firstQuartile-76895")).to.be.true;
         expect(fetchSpy.callCount).to.equal(5);
       })
       .then(() => {
@@ -148,9 +144,7 @@ describe("Adease", () => {
         return adease.notifyTimeUpdate(15500);
       })
       .then(() => {
-        expect(
-            fetchSpy.calledWith("http://midpoint-76895")
-          ).to.be.true;
+        expect(fetchSpy.calledWith("http://midpoint-76895")).to.be.true;
         expect(fetchSpy.callCount).to.equal(9);
       })
       .then(() => {
@@ -158,9 +152,7 @@ describe("Adease", () => {
         return adease.notifyTimeUpdate(35000);
       })
       .then(() => {
-        expect(
-            fetchSpy.calledWith("http://complete-76895")
-          ).to.be.true;
+        expect(fetchSpy.calledWith("http://complete-76895")).to.be.true;
         expect(fetchSpy.callCount).to.equal(18);
       });
   });
@@ -187,5 +179,20 @@ describe("Adease", () => {
 
     // Uses <= comparison on end times.
     expect(adease.getAssetTime(3743874.545)).to.equal(3577000);
+  });
+
+  it("gets the ads at a specific time", () => {
+    // Setup.
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+
+    // Make assertions.
+    let ads = adease.getAdsAtTime(0);
+    expect(ads).to.have.length(1);
+    expect(ads[0].id).to.equal('76895');
+
+    ads = adease.getAdsAtTime(3743864.545);
+    expect(ads).to.have.length(1);
+    expect(ads[0].id).to.equal('76914');
   });
 });

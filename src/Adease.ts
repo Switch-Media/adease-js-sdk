@@ -9,12 +9,12 @@ import Configuration, {
   EventType
 } from "./Configuration";
 
-import { round } from './Util';
+import { round } from "./Util";
 
 export default class Adease {
-  config: Configuration;
-  sentBeacons: Set<ITrackingURL>;
-  lastTimePosition: number;
+  private config: Configuration;
+  private sentBeacons: Set<ITrackingURL>;
+  private lastTimePosition: number;
 
   constructor() {
     this.sentBeacons = Set<ITrackingURL>();
@@ -55,7 +55,7 @@ export default class Adease {
   /**
    * Notify adease that a time update has occured. This may fire off beacons.
    * Returns a promise that resolves once all underlying actions have completed.
-   * 
+   *
    * @param timeMs number Time in milliseconds.
    */
   public notifyTimeUpdate(timeMs: number): Promise<undefined> {
@@ -70,37 +70,51 @@ export default class Adease {
   }
 
   /**
-   * 
+   *
    * @param assetTimeMs Returns the real stream time.
    */
   public getStreamTime(assetTimeMs: number): number {
-    return this.getAds()
-      .reduce((position: number, ad: IAd) => {
-        if (ad.startTime < position) {
-          return position + (ad.endTime - ad.startTime);
-        }
+    this.ensureSetup();
 
-        return position;
-      }, assetTimeMs);
+    return this.getAds().reduce((position: number, ad: IAd) => {
+      if (ad.startTime < position) {
+        return position + (ad.endTime - ad.startTime);
+      }
+
+      return position;
+    }, assetTimeMs);
   }
 
   /**
    * Returns the ads.
    */
-  public getAds() : IAd[] {
-    return [];
+  public getAds(): IAd[] {
+    this.ensureSetup();
+    return this.config.getAdBreaks();
   }
 
   /**
    * 
+   * @param timeMs Time in milliseconds.
+   */
+  public getAdsAtTime(timeMs: number): IAd[] {
+    this.ensureSetup();
+    return this.config.getAdBreaks().filter(ad => ad.startTime <= timeMs && ad.endTime >= timeMs);
+  }
+
+  /**
+   *
    * @param streamTimeMs number Time in milliseconds.
    * @returns number Time in milliseconds.
    */
-  public getAssetTime(streamTimeMs: number): number { 
+  public getAssetTime(streamTimeMs: number): number {
+    this.ensureSetup();
+
     const add = (a: number, b: number) => a + b;
 
     // Find the ads before the given time.
-    const allAds = this.config.getAdBreaks()
+    const allAds = this.config
+      .getAdBreaks()
       .filter(ad => ad.startTime < streamTimeMs);
 
     const previousAdsDuration = allAds
@@ -113,7 +127,6 @@ export default class Adease {
       .map(ad => streamTimeMs - ad.startTime)
       .reduce(add, 0);
 
-
     return round(streamTimeMs - (previousAdsDuration + inProgressAdsDuration));
   }
 
@@ -121,7 +134,6 @@ export default class Adease {
    * @return A promise that resolves once all beacons are sent.
    */
   private sendBeacons(time: number): Promise<undefined> {
-    this.ensureSetup();
     const ps = this.getBeaconsForRange(this.lastTimePosition, time)
       .filter(tURL => LinearEvents.includes(tURL.kind as EventType))
       .filter(
