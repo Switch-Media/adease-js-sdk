@@ -199,10 +199,7 @@ var Adease = function () {
                     var ad = _step.value;
 
                     // Position is in the middle of an ad. Move to end.
-                    if (position >= ad.startTime && position < ad.endTime) {
-                        console.log("here");
-                        position += ad.endTime;
-                    } else if (position >= ad.endTime) {
+                    if (position >= ad.startTime) {
                         position += ad.endTime;
                     }
                 }

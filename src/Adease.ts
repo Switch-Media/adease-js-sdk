@@ -90,10 +90,7 @@ export default class Adease {
     let position = assetTimeMs;
     for (const ad of ads) {
       // Position is in the middle of an ad. Move to end.
-      if (position >= ad.startTime && position < ad.endTime) {
-        console.log("here");
-        position += ad.endTime;
-      } else if (position >= ad.endTime) {
+      if (position >= ad.startTime) {
         position += ad.endTime;
       }
     }
