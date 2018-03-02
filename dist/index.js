@@ -179,12 +179,49 @@ var Adease = function () {
         key: "getStreamTime",
         value: function getStreamTime(assetTimeMs) {
             this.ensureSetup();
-            return this.getAds().reduce(function (position, ad) {
-                if (ad.startTime < position) {
-                    return position + (ad.endTime - ad.startTime);
+            // Calculate the true start times of each ad.
+            var ads = this.getAds().sort(function (a, b) {
+                if (a.startTime < b.startTime) {
+                    return -1;
                 }
-                return position;
-            }, assetTimeMs);
+                if (a.startTime > b.startTime) {
+                    return 1;
+                }
+                return 0;
+            });
+            var position = assetTimeMs;
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = ads[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var ad = _step.value;
+
+                    // Position is in the middle of an ad. Move to end.
+                    if (position >= ad.startTime && position < ad.endTime) {
+                        console.log("here");
+                        position += ad.endTime;
+                    } else if (position >= ad.endTime) {
+                        position += ad.endTime;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            return Util_1.round(position);
         }
         /**
          * Returns the ads.

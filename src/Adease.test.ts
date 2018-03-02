@@ -17,7 +17,7 @@ describe("Adease", () => {
   it("processes configuration from an object", () => {
     const adease = new Adease();
     adease.configureFromObject(FullConfig);
-    expect(adease.config.getAdBreaks()).to.not.be.empty;
+    expect(adease.getAds()).to.not.be.empty;
     expect(adease.getStreams()[0].url).to.equal(
       "http://sbs-adease.switchmedia.asia/268/adEase/getManifest"
     );
@@ -35,7 +35,7 @@ describe("Adease", () => {
     const adease = new Adease();
     return adease.configureFromURL("http://localhost").then(value => {
       expect(value).to.be.undefined;
-      expect(adease.config.getAdBreaks()).to.not.be.empty;
+      expect(adease.getAds()).to.not.be.empty;
       expect(adease.getStreams()[0].url).to.equal(
         "http://sbs-adease.switchmedia.asia/268/adEase/getManifest"
       );
@@ -179,6 +179,16 @@ describe("Adease", () => {
 
     // Uses <= comparison on end times.
     expect(adease.getAssetTime(3743874.545)).to.equal(3577000);
+  });
+
+  it("returns the stream time position", () => {
+    // Setup.
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+
+    expect(adease.getStreamTime(0)).to.equal(30514.69);
+    expect(adease.getStreamTime(4000)).to.equal(34514.69);
+    expect(adease.getStreamTime(4043874)).to.equal(42849595.1);
   });
 
   it("gets the ads at a specific time", () => {
