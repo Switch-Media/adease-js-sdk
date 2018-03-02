@@ -172,6 +172,30 @@ var Adease = function () {
         }
         /**
          *
+         * @param assetTimeMs Returns the real stream time.
+         */
+
+    }, {
+        key: "getStreamTime",
+        value: function getStreamTime(assetTimeMs) {
+            return this.getAds().reduce(function (position, ad) {
+                if (ad.startTime < position) {
+                    return position + (ad.endTime - ad.startTime);
+                }
+                return position;
+            }, assetTimeMs);
+        }
+        /**
+         * Returns the ads.
+         */
+
+    }, {
+        key: "getAds",
+        value: function getAds() {
+            return [];
+        }
+        /**
+         *
          * @param streamTimeMs number Time in milliseconds.
          * @returns number Time in milliseconds.
          */
@@ -179,15 +203,24 @@ var Adease = function () {
     }, {
         key: "getAssetTime",
         value: function getAssetTime(streamTimeMs) {
-            // Find the ads before the given time.
-            var ads = this.config.getAdBreaks().filter(function (ad) {
-                return ad.startTime < streamTimeMs && ad.endTime < streamTimeMs;
-            });
-            return Util_1.round(streamTimeMs - ads.map(function (ad) {
-                return ad.endTime - ad.startTime;
-            }).reduce(function (a, b) {
+            var add = function add(a, b) {
                 return a + b;
-            }, 0));
+            };
+            // Find the ads before the given time.
+            var allAds = this.config.getAdBreaks().filter(function (ad) {
+                return ad.startTime < streamTimeMs;
+            });
+            var previousAdsDuration = allAds.filter(function (ad) {
+                return ad.endTime <= streamTimeMs;
+            }).map(function (ad) {
+                return ad.endTime - ad.startTime;
+            }).reduce(add, 0);
+            var inProgressAdsDuration = allAds.filter(function (ad) {
+                return ad.endTime > streamTimeMs;
+            }).map(function (ad) {
+                return streamTimeMs - ad.startTime;
+            }).reduce(add, 0);
+            return Util_1.round(streamTimeMs - (previousAdsDuration + inProgressAdsDuration));
         }
         /**
          * @return A promise that resolves once all beacons are sent.
@@ -198,6 +231,7 @@ var Adease = function () {
         value: function sendBeacons(time) {
             var _this3 = this;
 
+            this.ensureSetup();
             var ps = this.getBeaconsForRange(this.lastTimePosition, time).filter(function (tURL) {
                 return Configuration_1.LinearEvents.includes(tURL.kind);
             }).filter(function (tURL) {
@@ -341,7 +375,8 @@ var Configuration = function () {
                     id: tURL.adID,
                     startTime: tURL.startTime,
                     endTime: tURL.endTime,
-                    trackingUrls: trackingURLs
+                    trackingUrls: trackingURLs,
+                    clickThroughs: []
                 };
                 return ads.concat(ad);
             }, []);

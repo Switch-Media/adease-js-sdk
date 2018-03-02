@@ -3,6 +3,7 @@ export interface IAd {
   startTime: number;
   endTime: number;
   trackingUrls: ITrackingURL[];
+  clickThroughs: ITrackingURL[];
 }
 
 export interface ITrackingURL {
@@ -176,7 +177,8 @@ export default class Configuration {
           id: tURL.adID,
           startTime: tURL.startTime,
           endTime: tURL.endTime,
-          trackingUrls: trackingURLs
+          trackingUrls: trackingURLs,
+          clickThroughs: [],
         };
 
         return ads.concat(ad);

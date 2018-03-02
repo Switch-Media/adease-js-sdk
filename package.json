@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "docs": "rimraf docs && typedoc --mode modules --exclude '**/*.test.ts' --out docs/ ./src",
     "test": "mocha -r ts-node/register src/**/*test.ts",

@@ -4,6 +4,11 @@
         "module": "none",
         "noImplicitAny": true,
         "strictNullChecks": true,
-        "moduleResolution": "node"
-    }
+        "moduleResolution": "node",
+        "declaration": true
+    },
+    "exclude": [
+        "fixtures",
+        "src/**/*.test.ts"
+    ]
 }
