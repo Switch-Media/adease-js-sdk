@@ -178,6 +178,7 @@ var Adease = function () {
     }, {
         key: "getStreamTime",
         value: function getStreamTime(assetTimeMs) {
+            this.ensureSetup();
             return this.getAds().reduce(function (position, ad) {
                 if (ad.startTime < position) {
                     return position + (ad.endTime - ad.startTime);
@@ -192,7 +193,21 @@ var Adease = function () {
     }, {
         key: "getAds",
         value: function getAds() {
-            return [];
+            this.ensureSetup();
+            return this.config.getAdBreaks();
+        }
+        /**
+         *
+         * @param timeMs Time in milliseconds.
+         */
+
+    }, {
+        key: "getAdsAtTime",
+        value: function getAdsAtTime(timeMs) {
+            this.ensureSetup();
+            return this.config.getAdBreaks().filter(function (ad) {
+                return ad.startTime <= timeMs && ad.endTime >= timeMs;
+            });
         }
         /**
          *
@@ -203,6 +218,7 @@ var Adease = function () {
     }, {
         key: "getAssetTime",
         value: function getAssetTime(streamTimeMs) {
+            this.ensureSetup();
             var add = function add(a, b) {
                 return a + b;
             };
@@ -231,7 +247,6 @@ var Adease = function () {
         value: function sendBeacons(time) {
             var _this3 = this;
 
-            this.ensureSetup();
             var ps = this.getBeaconsForRange(this.lastTimePosition, time).filter(function (tURL) {
                 return Configuration_1.LinearEvents.includes(tURL.kind);
             }).filter(function (tURL) {
@@ -359,7 +374,7 @@ var Configuration = function () {
                 return [];
             }
             return this.config.trackingURLs.filter(function (tURL) {
-                return tURL.kind === "clickthrough";
+                return tURL.kind === EventType.Clickthrough;
             }).reduce(function (ads, tURL) {
                 // Try to find an existing ad with this start time.
                 if (ads.findIndex(function (ad) {
@@ -376,7 +391,9 @@ var Configuration = function () {
                     startTime: tURL.startTime,
                     endTime: tURL.endTime,
                     trackingUrls: trackingURLs,
-                    clickThroughs: []
+                    clickThroughs: trackingURLs.filter(function (tURL) {
+                        return tURL.kind === EventType.Clickthrough;
+                    })
                 };
                 return ads.concat(ad);
             }, []);
