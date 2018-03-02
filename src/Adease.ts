@@ -71,10 +71,32 @@ export default class Adease {
 
   /**
    * 
+   * @param assetTimeMs Returns the real stream time.
+   */
+  public getStreamTime(assetTimeMs: number): number {
+    return this.getAds()
+      .reduce((position: number, ad: IAd) => {
+        if (ad.startTime < position) {
+          return position + (ad.endTime - ad.startTime);
+        }
+
+        return position;
+      }, assetTimeMs);
+  }
+
+  /**
+   * Returns the ads.
+   */
+  public getAds() : IAd[] {
+    return [];
+  }
+
+  /**
+   * 
    * @param streamTimeMs number Time in milliseconds.
    * @returns number Time in milliseconds.
    */
-  public getAssetTime(streamTimeMs: number): number {
+  public getAssetTime(streamTimeMs: number): number { 
     const add = (a: number, b: number) => a + b;
 
     // Find the ads before the given time.
@@ -99,6 +121,7 @@ export default class Adease {
    * @return A promise that resolves once all beacons are sent.
    */
   private sendBeacons(time: number): Promise<undefined> {
+    this.ensureSetup();
     const ps = this.getBeaconsForRange(this.lastTimePosition, time)
       .filter(tURL => LinearEvents.includes(tURL.kind as EventType))
       .filter(
