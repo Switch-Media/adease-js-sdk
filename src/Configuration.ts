@@ -158,7 +158,7 @@ export default class Configuration {
       return [];
     }
     return this.config.trackingURLs
-      .filter(tURL => tURL.kind === "clickthrough")
+      .filter(tURL => tURL.kind === EventType.Clickthrough)
       .reduce((ads: IAd[], tURL: ITrackingURL) => {
         // Try to find an existing ad with this start time.
         if (ads.findIndex(ad => ad.startTime === tURL.startTime) !== -1) {
@@ -178,7 +178,7 @@ export default class Configuration {
           startTime: tURL.startTime,
           endTime: tURL.endTime,
           trackingUrls: trackingURLs,
-          clickThroughs: [],
+          clickThroughs: trackingURLs.filter(tURL => tURL.kind === EventType.Clickthrough),
         };
 
         return ads.concat(ad);
