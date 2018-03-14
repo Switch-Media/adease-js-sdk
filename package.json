@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
-    "docs": "rimraf docs && typedoc --mode modules --exclude '**/*.test.ts' --out docs/ ./src",
+    "docs": "rimraf docs && typedoc --mode file --excludePrivate --excludeProtected --exclude '**/*.test.ts' --out docs/ ./src/Adease.ts",
     "test": "mocha -r ts-node/register src/**/*test.ts",
     "watch": "mocha -r ts-node/register --watch --reporter min --watch-extensions ts src/**/*test.ts"
   },
@@ -29,7 +29,7 @@
     "sinon": "^4.1.4",
     "ts-loader": "^3.2.0",
     "ts-node": "^4.1.0",
-    "typedoc": "^0.9.0",
+    "typedoc": "^0.11.1",
     "typedoc-plugin-internal-external": "^1.0.10",
     "typescript": "^2.6.2",
     "webpack": "^3.10.0"
