@@ -1,10 +1,12 @@
+import { List } from 'immutable';
+
 export interface IAd {
   id: string;
   startTime: number;
   endTime: number;
-  trackingUrls: ITrackingURL[];
-  clickThroughs: ITrackingURL[];
-}
+  trackingUrls: List<ITrackingURL>;
+  clickThroughs: List<ITrackingURL>;
+};
 
 export interface ITrackingURL {
   url: string;
@@ -15,10 +17,14 @@ export interface ITrackingURL {
 }
 
 export interface IConfiguration {
-  trackingURLs: ITrackingURL[];
-  streams: IStream[];
+  trackingURLs: List<ITrackingURL>;
+  streams: List<IStream>;
 }
 
+/**
+ * Used to map the incoming JSON from the server to something we can work with.
+ * Assumptions are made here about what format the returned data is in.
+ */
 export interface IConfigurationJSON {
   media: {
     trackingUrls: Array<{
@@ -141,57 +147,59 @@ export default class Configuration {
     }
 
     return {
-      trackingURLs: json.media.trackingUrls.map(obj => ({
+      trackingURLs: List(json.media.trackingUrls.map(obj => ({
         url: obj.url,
         startTime: Number(obj.starttime),
         endTime: Number(obj.endtime),
         kind: obj.event,
         adID: obj.adID
-      })),
+      }))),
 
-      streams: json.media.renditions.map(obj => ({
+      streams: List(json.media.renditions.map(obj => ({
         url: obj.url
-      }))
+      })))
     };
   }
 
-  public getAdBreaks(): IAd[] {
+  public getAdBreaks(): List<IAd> {
     if (!this.config || !this.config.trackingURLs) {
-      return [];
+      return List<IAd>();
     }
     return this.config.trackingURLs
-      .filter(tURL => tURL.kind === EventType.Clickthrough)
-      .reduce((ads: IAd[], tURL: ITrackingURL) => {
+      .filter(tURL => tURL ? tURL.kind === EventType.Clickthrough : false)
+      .reduce((ads: List<IAd>, tURL: ITrackingURL) => {
         // Try to find an existing ad with this start time.
-        if (ads.findIndex(ad => ad.startTime === tURL.startTime) !== -1) {
+        if (ads.findIndex(ad => ad ? ad.startTime === tURL.startTime : false) !== -1) {
           return ads;
         }
 
         // Get the tracking URLs for this ad.
-        const trackingURLs = this.config.trackingURLs.filter(
+        const trackingURLs = List<ITrackingURL>(this.config.trackingURLs.filter(
           t =>
+            t ? 
             t.adID === tURL.adID &&
             t.startTime >= tURL.startTime &&
             t.endTime <= tURL.endTime
-        );
+            : false
+        ));
 
         const ad: IAd = {
           id: tURL.adID,
           startTime: tURL.startTime,
           endTime: tURL.endTime,
           trackingUrls: trackingURLs,
-          clickThroughs: trackingURLs.filter(tURL => tURL.kind === EventType.Clickthrough),
+          clickThroughs: List(trackingURLs.filter(tURL => tURL ? tURL.kind === EventType.Clickthrough : false)),
         };
 
-        return ads.concat(ad);
-      }, []);
+        return ads.push(ad);
+      }, List<IAd>());
   }
 
   public getConfig(): IConfiguration {
     return this.config;
   }
 
-  public getTrackingURLs(): ITrackingURL[] {
+  public getTrackingURLs(): List<ITrackingURL> {
     return this.config.trackingURLs;
   }
 }
