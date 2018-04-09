@@ -29,6 +29,7 @@ export interface IConfigurationJSON {
             url: string;
             quality: string;
         }>;
+        live: boolean;
     };
 }
 export interface IStream {

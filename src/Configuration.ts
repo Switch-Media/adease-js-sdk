@@ -33,6 +33,8 @@ export interface IConfigurationJSON {
       url: string;
       quality: string;
     }>;
+
+    live: boolean;
   };
 }
 

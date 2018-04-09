@@ -6,6 +6,8 @@ const babelOptions = {
 };
 
 module.exports = {
+  mode: 'production',
+
   entry: './src/index.ts',
   // Useful for development in downstream projects, should be stripped for production.
   devtool: 'source-map',
