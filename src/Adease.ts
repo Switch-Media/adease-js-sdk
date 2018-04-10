@@ -1,4 +1,5 @@
 import { Set, List } from "immutable";
+import * as QueryString from "query-string";
 import Configuration, {
   EventType,
   IAd,
@@ -8,6 +9,8 @@ import Configuration, {
   LinearEvents
 } from "./Configuration";
 import { round } from "./Util";
+
+export type TQueryParams = { [key: string]: string };
 
 /**
  * The adease class essentially provides a wrapper around a configuration object.
@@ -32,8 +35,13 @@ export default class Adease {
   private config: Configuration;
   private sentBeacons: Set<ITrackingURL>;
   private lastTimePosition: number;
+  private serverURL: string;
+  private currentCuepointID: string;
+  private liveQueryParams: TQueryParams;
 
-  constructor() {
+  constructor(serverURL?: string, liveQueryParams?: TQueryParams) {
+    this.serverURL = serverURL || "";
+    this.liveQueryParams = liveQueryParams || {};
     this.sentBeacons = Set<ITrackingURL>();
     this.lastTimePosition = NaN;
   }
@@ -83,6 +91,56 @@ export default class Adease {
     return this.sendBeacons(timeMs)
       .then(() => (this.lastTimePosition = timeMs))
       .then(() => undefined);
+  }
+
+  /**
+   * For live only.
+   *
+   * Call when an ID3 tag is detected in the metadata track.
+   *
+   * @param tag The string tag of the event;
+   * @param timeMs The time in milliseconds that the event appears in the stream.
+   * @returns A promise that resolves once all undelying actions have completed.
+   */
+  public notifyID3Event(tag: string, timeMs: number): Promise<void> {
+    const owner = "switch.tv";
+    const ownerPosition = tag.indexOf(owner);
+
+    const extractIdentifier = (tag: string): string => {
+      const parts = tag.split(":");
+      return parts.length > 0 ? parts[1].trim() : "";
+    };
+
+    if (ownerPosition === -1) {
+      return Promise.resolve();
+    }
+    tag = tag.slice(ownerPosition + owner.length);
+    if (tag.includes("CUE:")) {
+      const id = extractIdentifier(tag);
+      this.currentCuepointID = id;
+    } else if (tag.includes("ADSTART:")) {
+      const adID = extractIdentifier(tag);
+      return (
+        this.retrieveLiveAdBreakTracking(this.currentCuepointID, adID)
+          // Offset each tracking URL by the time the ad break appears in the stream.
+          .then(_ =>
+            _.map(
+              tURL =>
+                (tURL
+                  ? Object.assign({}, tURL, {
+                      startTime: tURL.startTime + timeMs,
+                      endTime: tURL.endTime + timeMs
+                    })
+                  : tURL) as ITrackingURL
+            ).toList()
+          )
+          .then(_ => this.config.pushTrackingURLs(_))
+      );
+    } else if (tag.includes("ADEND:")) {
+      // Currently ignored.
+    }
+
+    return Promise.resolve();
   }
 
   /**
@@ -140,7 +198,9 @@ export default class Adease {
     this.ensureSetup();
     return this.config
       .getAdBreaks()
-      .filter(ad => ad ? ad.startTime <= timeMs && ad.endTime >= timeMs : false)
+      .filter(
+        ad => (ad ? ad.startTime <= timeMs && ad.endTime >= timeMs : false)
+      )
       .toJS();
   }
 
@@ -160,19 +220,46 @@ export default class Adease {
     // Find the ads before the given time.
     const allAds = this.config
       .getAdBreaks()
-      .filter(ad => ad ? ad.startTime < streamTimeMs : false);
+      .filter(ad => (ad ? ad.startTime < streamTimeMs : false));
 
     const previousAdsDuration = allAds
-      .filter(ad => ad ? ad.endTime <= streamTimeMs : false)
-      .map(ad => ad ? ad.endTime - ad.startTime : false)
+      .filter(ad => (ad ? ad.endTime <= streamTimeMs : false))
+      .map(ad => (ad ? ad.endTime - ad.startTime : false))
       .reduce(add, 0);
 
     const inProgressAdsDuration = allAds
-      .filter(ad => ad ? ad.endTime > streamTimeMs : false)
-      .map(ad => ad ? streamTimeMs - ad.startTime : ad)
+      .filter(ad => (ad ? ad.endTime > streamTimeMs : false))
+      .map(ad => (ad ? streamTimeMs - ad.startTime : ad))
       .reduce(add, 0);
 
     return round(streamTimeMs - (previousAdsDuration + inProgressAdsDuration));
+  }
+
+  private retrieveLiveAdBreakTracking(
+    cuepointID: string,
+    adID: string
+  ): Promise<List<ITrackingURL>> {
+    const queryString = QueryString.stringify(
+      Object.assign({}, this.liveQueryParams, {
+        cuepointID,
+        adID
+      })
+    );
+    return fetch(this.serverURL + "/stream/tracking?" + queryString)
+      .then(r => r.json())
+      .then(json => {
+        // Assert that the data contains an array.
+        if (
+          json &&
+          typeof json.data === "object" &&
+          json.data.hasOwnProperty("length")
+        ) {
+          return List<ITrackingURL>(
+            json.data.map(Configuration.convertTrackingURLJSON)
+          );
+        }
+        return List<ITrackingURL>();
+      });
   }
 
   /**
@@ -180,9 +267,14 @@ export default class Adease {
    */
   private sendBeacons(time: number): Promise<undefined> {
     const ps = this.getBeaconsForRange(this.lastTimePosition, time)
-      .filter(tURL => tURL ? LinearEvents.includes(tURL.kind as EventType) : false)
       .filter(
-        tURL => tURL ? tURL.startTime < time && tURL.startTime > this.lastTimePosition : false
+        tURL => (tURL ? LinearEvents.includes(tURL.kind as EventType) : false)
+      )
+      .filter(
+        tURL =>
+          tURL
+            ? tURL.startTime < time && tURL.startTime > this.lastTimePosition
+            : false
       )
       .map(tURL => {
         if (!tURL) {
@@ -203,7 +295,9 @@ export default class Adease {
   private getBeaconsForRange(start: number, end: number): List<ITrackingURL> {
     return this.config
       .getTrackingURLs()
-      .filter(tURL => tURL ? tURL.startTime <= end && tURL.endTime >= start : false)
+      .filter(
+        tURL => (tURL ? tURL.startTime <= end && tURL.endTime >= start : false)
+      )
       .toList();
   }
 
