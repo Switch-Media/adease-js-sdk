@@ -1,4 +1,7 @@
-import { IStream, IAd } from "./Configuration";
+import { IAd, IStream } from "./Configuration";
+export declare type TQueryParams = {
+    [key: string]: string;
+};
 /**
  * The adease class essentially provides a wrapper around a configuration object.
  * The configuration object contains all of the information regarding where in a stream
@@ -22,7 +25,10 @@ export default class Adease {
     private config;
     private sentBeacons;
     private lastTimePosition;
-    constructor();
+    private serverURL;
+    private currentCuepointID;
+    private liveQueryParams;
+    constructor(serverURL?: string, liveQueryParams?: TQueryParams);
     /**
      * Downloads adease configuration from a URL, returning a promise
      * that resolves with undefined when done.
@@ -44,6 +50,16 @@ export default class Adease {
      * @param timeMs number Time in milliseconds.
      */
     notifyTimeUpdate(timeMs: number): Promise<undefined>;
+    /**
+     * For live only.
+     *
+     * Call when an ID3 tag is detected in the metadata track.
+     *
+     * @param tag The string tag of the event;
+     * @param timeMs The time in milliseconds that the event appears in the stream.
+     * @returns A promise that resolves once all undelying actions have completed.
+     */
+    notifyID3Event(tag: string, timeMs: number): Promise<void>;
     /**
      * Since inserting ads into a stream changes the duration, it can be useful to translate
      * between the original time of the asset and the corresponding time in the loaded stream.
@@ -77,6 +93,7 @@ export default class Adease {
      * @returns number Time in milliseconds.
      */
     getAssetTime(streamTimeMs: number): number;
+    private retrieveLiveAdBreakTracking(cuepointID, adID);
     /**
      * @return A promise that resolves once all beacons are sent.
      */
