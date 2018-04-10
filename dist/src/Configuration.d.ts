@@ -1,9 +1,10 @@
+import { List } from "immutable";
 export interface IAd {
     id: string;
     startTime: number;
     endTime: number;
-    trackingUrls: ITrackingURL[];
-    clickThroughs: ITrackingURL[];
+    trackingUrls: List<ITrackingURL>;
+    clickThroughs: List<ITrackingURL>;
 }
 export interface ITrackingURL {
     url: string;
@@ -13,9 +14,14 @@ export interface ITrackingURL {
     adID: string;
 }
 export interface IConfiguration {
-    trackingURLs: ITrackingURL[];
-    streams: IStream[];
+    trackingURLs: List<ITrackingURL>;
+    streams: List<IStream>;
+    isLive: boolean;
 }
+/**
+ * Used to map the incoming JSON from the server to something we can work with.
+ * Assumptions are made here about what format the returned data is in.
+ */
 export interface IConfigurationJSON {
     media: {
         trackingUrls: Array<{
@@ -78,7 +84,10 @@ export default class Configuration {
     constructor(config: IConfiguration);
     static fromJSON(config: IConfigurationJSON): Configuration;
     static parseFromObject(json: IConfigurationJSON): IConfiguration | null;
-    getAdBreaks(): IAd[];
+    pushTrackingURLs(trackingURLs: List<ITrackingURL>): void;
+    getAdBreaks(): List<IAd>;
+    static getDurationFromClickthrough(trackingURLs: List<ITrackingURL>): number;
+    static convertTrackingURLJSON(obj: any): ITrackingURL;
     getConfig(): IConfiguration;
-    getTrackingURLs(): ITrackingURL[];
+    getTrackingURLs(): List<ITrackingURL>;
 }

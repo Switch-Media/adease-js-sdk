@@ -1,2 +1,2 @@
-import Adease from './Adease';
+import Adease from "./Adease";
 export { Adease };
