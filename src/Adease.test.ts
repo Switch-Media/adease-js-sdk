@@ -7,6 +7,8 @@ declare let global: any;
 
 // Fixtures
 import FullConfig from "../fixtures/sample_full_config";
+import FullConfigLive from "../fixtures/sample_full_config_live";
+import LiveTrackingData from "../fixtures/live_tracking";
 
 describe("Adease", () => {
   it("initialises", () => {
@@ -199,10 +201,48 @@ describe("Adease", () => {
     // Make assertions.
     let ads = adease.getAdsAtTime(0);
     expect(ads).to.have.length(1);
-    expect(ads[0].id).to.equal('76895');
+    expect(ads[0].id).to.equal("76895");
 
     ads = adease.getAdsAtTime(3743864.545);
     expect(ads).to.have.length(1);
-    expect(ads[0].id).to.equal('76914');
+    expect(ads[0].id).to.equal("76914");
+  });
+});
+
+// Adease Live
+describe("Adease Live", () => {
+  it("initialises with live config", () => {
+    const adease = new Adease();
+    adease.configureFromObject(FullConfigLive);
+
+    expect(adease.getStreams()[0].url).to.equal(
+      "https://adease-api-stage.switch.tv/stream/manifest"
+    );
+  });
+
+  it("parses id3 events and retrieves tracking information", () => {
+    const adease = new Adease();
+    adease.configureFromObject(FullConfigLive);
+
+    const fetch = (url: string) => {
+      return Promise.resolve({
+        json: () => LiveTrackingData
+      });
+    };
+
+    global.fetch = sinon.spy(fetch);
+
+    return adease
+      .notifyID3Event("ID3PRIVswitch.tvCUE:158", 154)
+      .then(() => {
+        return adease.notifyID3Event("ID3PRIVswitch.tvADSTART:abc123-ad", 154);
+      })
+      .then(() => {
+        const ads = adease.getAds();
+
+        expect(ads).to.have.length(1);
+        expect(ads[0].startTime).to.equal(154);
+        expect(ads[0].endTime).to.equal(154 + 30080);
+      });
   });
 });

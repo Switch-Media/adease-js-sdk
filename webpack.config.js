@@ -32,7 +32,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
-  externals: ['immutable'],
+  externals: ['immutable', 'query-string'],
   // Authored as a UMD library with the name 'adease'.
   output: {
     filename: 'index.js',
