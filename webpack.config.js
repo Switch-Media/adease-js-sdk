@@ -1,4 +1,7 @@
 const path = require('path');
+const fs = require('fs');
+const webpack = require('webpack');
+const version = fs.readFileSync(path.join('.', 'VERSION')).toString();
 
 // Recommended option from babeljs.io/env
 const babelOptions = {
@@ -39,5 +42,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     library: 'adease',
     libraryTarget: 'umd'
-  }
+  },
+
+  plugins: [
+    new webpack.DefinePlugin({
+      VERSION: JSON.stringify(version.trim())
+    })
+  ]
 };

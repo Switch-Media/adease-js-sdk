@@ -12,6 +12,9 @@ import { round } from "./Util";
 
 export type TQueryParams = { [key: string]: string };
 
+// Injected by webpack using DefinePlugin.
+declare const VERSION: string;
+
 /**
  * The adease class essentially provides a wrapper around a configuration object.
  * The configuration object contains all of the information regarding where in a stream
@@ -38,6 +41,8 @@ export default class Adease {
   private serverURL: string;
   private currentCuepointID: string;
   private liveQueryParams: TQueryParams;
+
+  public readonly version: string = VERSION;
 
   constructor(serverURL?: string, liveQueryParams?: TQueryParams) {
     this.serverURL = serverURL || "";

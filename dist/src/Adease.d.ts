@@ -28,6 +28,7 @@ export default class Adease {
     private serverURL;
     private currentCuepointID;
     private liveQueryParams;
+    readonly version: string;
     constructor(serverURL?: string, liveQueryParams?: TQueryParams);
     /**
      * Downloads adease configuration from a URL, returning a promise
