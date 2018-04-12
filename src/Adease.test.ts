@@ -4,6 +4,7 @@ import * as sinon from "sinon";
 import Adease from "./Adease";
 
 declare let global: any;
+global.VERSION = "test";
 
 // Fixtures
 import FullConfig from "../fixtures/sample_full_config";
