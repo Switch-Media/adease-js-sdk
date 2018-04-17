@@ -1,39 +1,44 @@
 {
   "name": "adease-sdk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
-    "docs": "rimraf docs && typedoc --mode modules --exclude '**/*.test.ts' --out docs/ ./src",
+    "docs": "rimraf docs && typedoc --mode file --excludePrivate --excludeProtected --exclude '**/*.test.ts' --out docs/ ./src/Adease.ts",
     "test": "mocha -r ts-node/register src/**/*test.ts",
-    "watch": "mocha -r ts-node/register --watch --reporter min --watch-extensions ts src/**/*test.ts"
+    "watch": "mocha -r ts-node/register --watch --reporter min --watch-extensions ts src/**/*test.ts",
+    "build": "rimraf dist && webpack"
   },
   "keywords": [],
   "author": "Switch Media",
-  "license": "proprietary",
+  "license": "Apache2.0",
   "devDependencies": {
-    "@types/chai": "^4.1.0",
+    "@types/chai": "^4.1.2",
     "@types/chai-as-promised": "^7.1.0",
-    "@types/lodash": "^4.14.92",
-    "@types/mocha": "^2.2.46",
-    "@types/nock": "^9.1.1",
-    "@types/sinon": "^4.1.2",
+    "@types/lodash": "^4.14.106",
+    "@types/mocha": "^5.0.0",
+    "@types/nock": "^9.1.2",
+    "@types/query-string": "^5.1.0",
+    "@types/sinon": "^4.3.1",
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
+    "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^4.1.0",
+    "mocha": "^5.0.5",
     "rimraf": "^2.6.2",
-    "sinon": "^4.1.4",
-    "ts-loader": "^3.2.0",
-    "ts-node": "^4.1.0",
-    "typedoc": "^0.9.0",
+    "sinon": "^4.5.0",
+    "ts-loader": "^4.0.0",
+    "ts-node": "^5.0.1",
+    "typedoc": "^0.11.1",
     "typedoc-plugin-internal-external": "^1.0.10",
-    "typescript": "^2.6.2",
-    "webpack": "^3.10.0"
+    "typescript": "^2.8.1",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
   },
   "dependencies": {
-    "immutable": "^3.8.2"
+    "immutable": "^3.8.2",
+    "query-string": "^5.0"
   }
 }

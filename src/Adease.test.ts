@@ -4,9 +4,12 @@ import * as sinon from "sinon";
 import Adease from "./Adease";
 
 declare let global: any;
+global.VERSION = "test";
 
 // Fixtures
 import FullConfig from "../fixtures/sample_full_config";
+import FullConfigLive from "../fixtures/sample_full_config_live";
+import LiveTrackingData from "../fixtures/live_tracking";
 
 describe("Adease", () => {
   it("initialises", () => {
@@ -17,7 +20,7 @@ describe("Adease", () => {
   it("processes configuration from an object", () => {
     const adease = new Adease();
     adease.configureFromObject(FullConfig);
-    expect(adease.config.getAdBreaks()).to.not.be.empty;
+    expect(adease.getAds()).to.not.be.empty;
     expect(adease.getStreams()[0].url).to.equal(
       "http://sbs-adease.switchmedia.asia/268/adEase/getManifest"
     );
@@ -35,7 +38,7 @@ describe("Adease", () => {
     const adease = new Adease();
     return adease.configureFromURL("http://localhost").then(value => {
       expect(value).to.be.undefined;
-      expect(adease.config.getAdBreaks()).to.not.be.empty;
+      expect(adease.getAds()).to.not.be.empty;
       expect(adease.getStreams()[0].url).to.equal(
         "http://sbs-adease.switchmedia.asia/268/adEase/getManifest"
       );
@@ -122,18 +125,14 @@ describe("Adease", () => {
     return adease
       .notifyTimeUpdate(0)
       .then(() => {
-        expect(
-          fetchSpy.calledWith("http://firstQuartile-76895")
-        ).to.be.false;
+        expect(fetchSpy.calledWith("http://firstQuartile-76895")).to.be.false;
         expect(fetchSpy.callCount).to.equal(0);
       })
       .then(() => {
         return adease.notifyTimeUpdate(7700);
       })
       .then(() => {
-        expect(
-          fetchSpy.calledWith("http://firstQuartile-76895")
-        ).to.be.true;
+        expect(fetchSpy.calledWith("http://firstQuartile-76895")).to.be.true;
         expect(fetchSpy.callCount).to.equal(5);
       })
       .then(() => {
@@ -148,9 +147,7 @@ describe("Adease", () => {
         return adease.notifyTimeUpdate(15500);
       })
       .then(() => {
-        expect(
-            fetchSpy.calledWith("http://midpoint-76895")
-          ).to.be.true;
+        expect(fetchSpy.calledWith("http://midpoint-76895")).to.be.true;
         expect(fetchSpy.callCount).to.equal(9);
       })
       .then(() => {
@@ -158,10 +155,95 @@ describe("Adease", () => {
         return adease.notifyTimeUpdate(35000);
       })
       .then(() => {
-        expect(
-            fetchSpy.calledWith("http://complete-76895")
-          ).to.be.true;
+        expect(fetchSpy.calledWith("http://complete-76895")).to.be.true;
         expect(fetchSpy.callCount).to.equal(18);
+      });
+  });
+
+  it("returns the asset time position", () => {
+    // Setup.
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+
+    // Make assertions.
+    expect(adease.getAssetTime(0)).to.equal(0);
+
+    // During the first pre-roll.
+    expect(adease.getAssetTime(15 * 1000)).to.equal(0);
+
+    // 40 seconds (right after pre-roll).
+    expect(adease.getAssetTime(40 * 1000)).to.equal(9485.31);
+
+    // 3,728 seconds (~ 1 hour)
+    expect(adease.getAssetTime(3728 * 1000)).to.equal(3576240.14);
+
+    // Calculates position correctly when in the middle of an ad.
+    expect(adease.getAssetTime(3743864.545)).to.equal(3577000);
+
+    // Uses <= comparison on end times.
+    expect(adease.getAssetTime(3743874.545)).to.equal(3577000);
+  });
+
+  it("returns the stream time position", () => {
+    // Setup.
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+
+    expect(adease.getStreamTime(0)).to.equal(30514.69);
+    expect(adease.getStreamTime(4000)).to.equal(34514.69);
+    expect(adease.getStreamTime(4043874)).to.equal(42849595.1);
+  });
+
+  it("gets the ads at a specific time", () => {
+    // Setup.
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+
+    // Make assertions.
+    let ads = adease.getAdsAtTime(0);
+    expect(ads).to.have.length(1);
+    expect(ads[0].id).to.equal("76895");
+
+    ads = adease.getAdsAtTime(3743864.545);
+    expect(ads).to.have.length(1);
+    expect(ads[0].id).to.equal("76914");
+  });
+});
+
+// Adease Live
+describe("Adease Live", () => {
+  it("initialises with live config", () => {
+    const adease = new Adease();
+    adease.configureFromObject(FullConfigLive);
+
+    expect(adease.getStreams()[0].url).to.equal(
+      "https://adease-api-stage.switch.tv/stream/manifest"
+    );
+  });
+
+  it("parses id3 events and retrieves tracking information", () => {
+    const adease = new Adease();
+    adease.configureFromObject(FullConfigLive);
+
+    const fetch = (url: string) => {
+      return Promise.resolve({
+        json: () => LiveTrackingData
+      });
+    };
+
+    global.fetch = sinon.spy(fetch);
+
+    return adease
+      .notifyID3Event("ID3PRIVswitch.tvCUE:158", 154)
+      .then(() => {
+        return adease.notifyID3Event("ID3PRIVswitch.tvADSTART:abc123-ad", 154);
+      })
+      .then(() => {
+        const ads = adease.getAds();
+
+        expect(ads).to.have.length(1);
+        expect(ads[0].startTime).to.equal(154);
+        expect(ads[0].endTime).to.equal(154 + 30080);
       });
   });
 });
