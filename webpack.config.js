@@ -41,7 +41,9 @@ module.exports = {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
     library: 'adease',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
+ 		globalObject: "typeof self !== 'undefined' ? self : this"
   },
 
   plugins: [
