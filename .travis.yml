@@ -1,3 +1,12 @@
 language: node_js
 node_js:
-  - "9"
+- '9'
+deploy:
+  provider: npm
+  email: kaleypoole17@gmail.com
+  api_key:
+    secure: YQuDzRqQjrPICWV8ASMwgnkQkSaSDQPUV7wsjLKCnuVTu25P7eg5nxsTitSturQ94gSQOSYa/X4NzLs4QlFaOXdib7zi2R7v+U3WcDHpsGLkfiCMqJCFQm3v5zHb562nL4pxFfdq5wh4v3SQm9KZPi4PtYdbJY19k65X4ppxeR1ETdD48kuZl8F5VoW/gOD66OqwClC+5M1DkjJIHzKqgP3ExFAUxyyEkGDHfg+qMsx9rUsax3BsA2gA9RE1Km+LQjOOk5W/3PFSUg7qg2I5X9e5LdVeZrreLPgXWGLISSHOZl30314tjyfiTD30/iWBmF1xUHEXTVvbc67E+s9cI1NsLBamwz37i1H7WkZ/j1xVFxi3CMQd2c3WRaqH8kvwQjiIquGk2tUX2XV3WzrKUxyJd08pTKG72jG4nI7WJqaYPSPv22slGl9NnJW0m66TdpJz04jpy3z01Pfp+8OOwTUTcnAi8eEWf/81BsGa101RddEFUNYDLN4BWoaViV7MhOKW/kRUAVvKfqc4oahydXU4TKtCqFtaE0ddG4u8FpEpj+IMeGDgtrzNU+NVjtH0h28QCR8tPjvjlZEO/7ijouleYvzOVfl7aCxHyQuSHi5GST/Ah72k2enu3bNL8ENp4kYFDawGJvNLXMqtclW+Y1XLBbWfW8WI1nNCvDlPYXE=
+  on:
+    tags: true
+    repo: Switch-Media/adease-js-sdk
+    branch: master
