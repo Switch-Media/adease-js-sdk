@@ -293,14 +293,26 @@ export default class Adease {
         tURL ? LinearEvents.includes(tURL.kind as EventType) : false;
     };
 
+    const timeFilter = (tURL: ITrackingURL) => {
+      if (!tURL) {
+        return false;
+      }
+
+      if (LinearEvents.includes(tURL.kind as EventType)) {
+        return tURL.startTime < time && tURL.startTime > this.lastTimePosition;
+      }
+      return tURL.startTime <= time && tURL.endTime > time;
+    };
+
+    if ((global as any).debug) {
+      const ps = this.getBeaconsForRange(this.lastTimePosition, time)
+        .filter(kindFilter())
+        .filter(timeFilter);
+    }
+
     const ps = this.getBeaconsForRange(this.lastTimePosition, time)
       .filter(kindFilter())
-      .filter(
-        tURL =>
-          tURL
-            ? tURL.startTime < time && tURL.startTime > this.lastTimePosition
-            : false
-      )
+      .filter(timeFilter)
       .map(tURL => {
         if (!tURL) {
           return Promise.resolve();
