@@ -228,6 +228,11 @@ describe("Adease", () => {
       .then(() => {
         expect(fetchSpy.calledWith("http://pause-76895")).to.be.true;
         expect(fetchSpy.callCount).to.equal(1);
+      })
+      .then(() => adease.notifyPlayerEvent(EventType.Pause, 40))
+      .then(() => {
+        expect(fetchSpy.calledWith("http://pause-76895")).to.be.true;
+        expect(fetchSpy.callCount).to.equal(2);
       });
   });
 
