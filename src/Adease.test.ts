@@ -2,6 +2,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 
 import Adease from "./Adease";
+import { EventType } from "./Configuration";
 
 declare let global: any;
 global.VERSION = "test";
@@ -207,6 +208,36 @@ describe("Adease", () => {
     ads = adease.getAdsAtTime(3743864.545);
     expect(ads).to.have.length(1);
     expect(ads[0].id).to.equal("76914");
+  });
+
+  it("sends user actions", () => {
+    const fetch = (url: string, options?: any) => Promise.resolve();
+
+    const fetchSpy = (global.fetch = sinon.spy(fetch));
+
+    const adease = new Adease();
+    adease.configureFromObject(FullConfig);
+
+    // User actions only work after a call to `notifyTimeUpdate` to initialise the player position.
+    return adease
+      .notifyTimeUpdate(1)
+      .then(() => {
+        return adease.notifyPlayerEvent(EventType.Pause, 20);
+      })
+      .then(() => {
+        expect(fetchSpy.calledWith("http://pause-76895")).to.be.true;
+        expect(fetchSpy.callCount).to.equal(1);
+      })
+      .then(() => adease.notifyPlayerEvent(EventType.Pause, 40))
+      .then(() => {
+        expect(fetchSpy.calledWith("http://pause-76895")).to.be.true;
+        expect(fetchSpy.callCount).to.equal(2);
+      });
+  });
+
+  it("throws an exception if not setup", () => {
+    const adease = new Adease();
+    expect(() => adease.notifyTimeUpdate(1)).to.throw(Error, /not setup/);
   });
 });
 

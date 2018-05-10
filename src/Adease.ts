@@ -282,6 +282,9 @@ export default class Adease {
    * @return A promise that resolves once all beacons are sent.
    */
   private sendBeacons(time: number, eventType?: EventType): Promise<undefined> {
+    const isLinearEvent = (tURL: ITrackingURL) =>
+      LinearEvents.includes(tURL.kind as EventType);
+
     // If eventType is provided, then send those beacons.
     // Otherwise send the linear event beacons.
     const kindFilter = () => {
@@ -293,22 +296,32 @@ export default class Adease {
         tURL ? LinearEvents.includes(tURL.kind as EventType) : false;
     };
 
+    const timeFilter = (tURL: ITrackingURL) => {
+      if (!tURL) {
+        return false;
+      }
+
+      if (isLinearEvent(tURL)) {
+        return tURL.startTime < time && tURL.startTime > this.lastTimePosition;
+      }
+      return tURL.startTime <= time && tURL.endTime > time;
+    };
+
     const ps = this.getBeaconsForRange(this.lastTimePosition, time)
       .filter(kindFilter())
-      .filter(
-        tURL =>
-          tURL
-            ? tURL.startTime < time && tURL.startTime > this.lastTimePosition
-            : false
-      )
+      .filter(timeFilter)
       .map(tURL => {
         if (!tURL) {
           return Promise.resolve();
         }
-        if (tURL && this.sentBeacons.includes(tURL)) {
-          return Promise.resolve();
+        // Linear events should only be sent once. All others can be sent
+        // multiple times.
+        if (isLinearEvent(tURL)) {
+          if (tURL && this.sentBeacons.includes(tURL)) {
+            return Promise.resolve();
+          }
+          this.sentBeacons = this.sentBeacons.add(tURL);
         }
-        this.sentBeacons = this.sentBeacons.add(tURL);
         return fetch(tURL.url, {
           mode: "no-cors"
         }).then(() => undefined);
