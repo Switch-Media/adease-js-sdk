@@ -307,12 +307,6 @@ export default class Adease {
       return tURL.startTime <= time && tURL.endTime > time;
     };
 
-    if ((global as any).debug) {
-      const ps = this.getBeaconsForRange(this.lastTimePosition, time)
-        .filter(kindFilter())
-        .filter(timeFilter);
-    }
-
     const ps = this.getBeaconsForRange(this.lastTimePosition, time)
       .filter(kindFilter())
       .filter(timeFilter)

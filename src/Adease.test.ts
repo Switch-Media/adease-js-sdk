@@ -217,7 +217,6 @@ describe("Adease", () => {
 
     const adease = new Adease();
     adease.configureFromObject(FullConfig);
-    global.debug = true;
 
     // User actions only work after a call to `notifyTimeUpdate` to initialise the player position.
     return adease
