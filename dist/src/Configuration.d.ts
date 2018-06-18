@@ -71,7 +71,7 @@ export declare enum EventType {
     Rewind = "rewind",
     Skip = "skip",
     PlayerExpand = "playerExpand",
-    PlayerCollapse = "playerCollapse",
+    PlayerCollapse = "playerCollapse"
 }
 export declare const NonLinearEvents: EventType[];
 export declare const LinearEvents: EventType[];

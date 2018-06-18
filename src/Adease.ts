@@ -149,6 +149,17 @@ export default class Adease {
   }
 
   /**
+   * Notify that a player event has occured, such as resume, pause, mute or unmute.
+   * This will send the appropriate beacons for that event.
+   *
+   * @param evt The type of event, such as "mute" or "pause".
+   * @param timeMs
+   */
+  notifyPlayerEvent(evt: EventType, timeMs: number): Promise<void> {
+    return this.sendBeacons(timeMs, evt);
+  }
+
+  /**
    * Since inserting ads into a stream changes the duration, it can be useful to translate
    * between the original time of the asset and the corresponding time in the loaded stream.
    * This method returns the time in the stream that a position in the original asset corresponds to.
@@ -270,25 +281,47 @@ export default class Adease {
   /**
    * @return A promise that resolves once all beacons are sent.
    */
-  private sendBeacons(time: number): Promise<undefined> {
+  private sendBeacons(time: number, eventType?: EventType): Promise<undefined> {
+    const isLinearEvent = (tURL: ITrackingURL) =>
+      LinearEvents.includes(tURL.kind as EventType);
+
+    // If eventType is provided, then send those beacons.
+    // Otherwise send the linear event beacons.
+    const kindFilter = () => {
+      if (eventType != null) {
+        return (tURL: ITrackingURL) =>
+          tURL ? (tURL.kind as EventType) === eventType : false;
+      }
+      return (tURL: ITrackingURL) =>
+        tURL ? LinearEvents.includes(tURL.kind as EventType) : false;
+    };
+
+    const timeFilter = (tURL: ITrackingURL) => {
+      if (!tURL) {
+        return false;
+      }
+
+      if (isLinearEvent(tURL)) {
+        return tURL.startTime < time && tURL.startTime > this.lastTimePosition;
+      }
+      return tURL.startTime <= time && tURL.endTime > time;
+    };
+
     const ps = this.getBeaconsForRange(this.lastTimePosition, time)
-      .filter(
-        tURL => (tURL ? LinearEvents.includes(tURL.kind as EventType) : false)
-      )
-      .filter(
-        tURL =>
-          tURL
-            ? tURL.startTime < time && tURL.startTime > this.lastTimePosition
-            : false
-      )
+      .filter(kindFilter())
+      .filter(timeFilter)
       .map(tURL => {
         if (!tURL) {
           return Promise.resolve();
         }
-        if (tURL && this.sentBeacons.includes(tURL)) {
-          return Promise.resolve();
+        // Linear events should only be sent once. All others can be sent
+        // multiple times.
+        if (isLinearEvent(tURL)) {
+          if (tURL && this.sentBeacons.includes(tURL)) {
+            return Promise.resolve();
+          }
+          this.sentBeacons = this.sentBeacons.add(tURL);
         }
-        this.sentBeacons = this.sentBeacons.add(tURL);
         return fetch(tURL.url, {
           mode: "no-cors"
         }).then(() => undefined);

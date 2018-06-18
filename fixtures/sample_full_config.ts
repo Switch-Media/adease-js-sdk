@@ -380,7 +380,7 @@ export default {
           "starttime": "0",
           "endtime": "30514.689",
           "event": "pause",
-          "url": "https:\/\/pubads.g.doubleclick.net\/pagead\/conversion\/?ai=BbEKV2IrlWd3xF8nK2ASrsITQDuH3h45FAAAAEAEg85zGHzgAWMO0pe-OA2Cl-JGAkAGyAQ53d3cuc2JzLmNvbS5hdboBCzY0MHgzNjBfeG1syAEF2gEWaHR0cDovL3d3dy5zYnMuY29tLmF1L5gC-M8CqQIDP9EB4k-qPsACAuACAOoCGi80MTE3L3ZpZGVvLmlvcy5zYnMuY29tLmF1-AL80R6QA-QKmAPkCqgDAeAEAdIFBRCTqdMukAYBoAYk2AYB2AcA4AcL0ggHCIBhEAEYAQ&sigh=bpPCyJYLZk0&label=adpause&ad_mt=[AD_MT]",
+          "url": "http:\/\/pause-76895",
           "adID": "76895",
           "adVideoID": "2118362"
         },

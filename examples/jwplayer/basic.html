@@ -1,0 +1,38 @@
+<html>
+
+<head>
+    <!-- JWPlayer -->
+    <script src="https://content.jwplatform.com/libraries/HHwnBf5R.js"></script>
+
+    <!-- Adease SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/query-string@1.0.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/immutable@3.8.2/dist/immutable.min.js"></script>
+    <script>
+        // The immutable UMD exports itself to `Immutable`, but the adease sdk looks for `immutable`.
+        window.immutable = window.Immutable;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/adease-sdk@1.0.0"></script>
+</head>
+
+<body>
+    <div id="playerRoot"></div>
+    <script>
+        const configURL = 'https://storage.googleapis.com/adease-fixtures/demo-data/sample-getconfig.json';
+        const playerInstance = jwplayer("playerRoot");
+        const adeaseI = new adease.Adease();
+        window.playerInstance = playerInstance;
+
+        adeaseI.configureFromURL(configURL).then(() => {
+            var streamUrl = adeaseI.getStreams()[0].url;
+            playerInstance.setup({
+                file: streamUrl,
+            });
+
+            playerInstance.on('time', data => {
+                adeaseI.notifyTimeUpdate(data.position * 1000)
+            });
+        });
+    </script>
+</body>
+
+</html>

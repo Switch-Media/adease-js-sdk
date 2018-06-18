@@ -1,4 +1,4 @@
-import { IAd, IStream } from "./Configuration";
+import { EventType, IAd, IStream } from "./Configuration";
 export declare type TQueryParams = {
     [key: string]: string;
 };
@@ -62,6 +62,14 @@ export default class Adease {
      */
     notifyID3Event(tag: string, timeMs: number): Promise<void>;
     /**
+     * Notify that a player event has occured, such as resume, pause, mute or unmute.
+     * This will send the appropriate beacons for that event.
+     *
+     * @param evt The type of event, such as "mute" or "pause".
+     * @param timeMs
+     */
+    notifyPlayerEvent(evt: EventType, timeMs: number): Promise<void>;
+    /**
      * Since inserting ads into a stream changes the duration, it can be useful to translate
      * between the original time of the asset and the corresponding time in the loaded stream.
      * This method returns the time in the stream that a position in the original asset corresponds to.
@@ -94,15 +102,15 @@ export default class Adease {
      * @returns number Time in milliseconds.
      */
     getAssetTime(streamTimeMs: number): number;
-    private retrieveLiveAdBreakTracking(cuepointID, adID);
+    private retrieveLiveAdBreakTracking;
     /**
      * @return A promise that resolves once all beacons are sent.
      */
-    private sendBeacons(time);
-    private getBeaconsForRange(start, end);
-    private ensureSetup();
+    private sendBeacons;
+    private getBeaconsForRange;
+    private ensureSetup;
     /**
      * Resets the internal state of the object so that it can be reused.
      */
-    private reset();
+    private reset;
 }
