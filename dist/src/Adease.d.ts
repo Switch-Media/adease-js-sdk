@@ -102,15 +102,15 @@ export default class Adease {
      * @returns number Time in milliseconds.
      */
     getAssetTime(streamTimeMs: number): number;
-    private retrieveLiveAdBreakTracking(cuepointID, adID);
+    private retrieveLiveAdBreakTracking;
     /**
      * @return A promise that resolves once all beacons are sent.
      */
-    private sendBeacons(time, eventType?);
-    private getBeaconsForRange(start, end);
-    private ensureSetup();
+    private sendBeacons;
+    private getBeaconsForRange;
+    private ensureSetup;
     /**
      * Resets the internal state of the object so that it can be reused.
      */
-    private reset();
+    private reset;
 }
