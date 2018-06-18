@@ -1,6 +1,7 @@
 language: node_js
 node_js:
-- '9'
+- 'node'
+- 'lts/*'
 deploy:
   provider: npm
   email: kaleypoole17@gmail.com
