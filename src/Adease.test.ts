@@ -11,6 +11,7 @@ global.VERSION = "test";
 import FullConfig from "../fixtures/sample_full_config";
 import FullConfigLive from "../fixtures/sample_full_config_live";
 import LiveTrackingData from "../fixtures/live_tracking";
+import Issue9Config from "../fixtures/issue_9_full_config";
 
 describe("Adease", () => {
   it("initialises", () => {
@@ -192,7 +193,7 @@ describe("Adease", () => {
 
     expect(adease.getStreamTime(0)).to.equal(30514.69);
     expect(adease.getStreamTime(4000)).to.equal(34514.69);
-    expect(adease.getStreamTime(4043874)).to.equal(42849595.1);
+    expect(adease.getStreamTime(4043874)).to.equal(4255974.96);
   });
 
   it("gets the ads at a specific time", () => {
@@ -278,3 +279,12 @@ describe("Adease Live", () => {
       });
   });
 });
+
+describe("Issue 9", () => {
+  it("correctly calculates the stream time", () => {
+    const adease = new Adease();
+    adease.configureFromObject(Issue9Config);
+
+    expect(adease.getStreamTime(1309214.5)).to.equal(1369386.5);
+  })
+})

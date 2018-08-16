@@ -187,7 +187,7 @@ export default class Adease {
     for (const ad of ads) {
       // Position is in the middle of an ad. Move to end.
       if (position >= ad.startTime) {
-        position += ad.endTime;
+        position += (ad.endTime - ad.startTime);
       }
     }
 
